@@ -1,0 +1,356 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>WingIt 직업가치관검사 고등학생</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/progressbar_barfiller.css">
+    <link rel="stylesheet" href="/css/gijgo.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/animated-headline.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table.css"/>
+
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .page-link {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 0 5px;
+            background-color: #0e1d34;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .page-link:hover {
+            background-color: #091621;
+            transform: scale(1.05);
+        }
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+
+        const gender = /*[[${gender}]]*/ null;
+        const startDtm = /*[[${startDtm}]]*/ null;
+
+        console.log("gender : ", gender)
+        console.log("typeof gender : ", typeof gender)
+        console.log("startDtm : ", startDtm)
+        console.log("typeof startDtm : ", typeof startDtm)
+
+        $(document).ready(function () {
+
+            // 로그인 정보가 없으면, alert 띄우고 로그인 창으로 보내기
+            const msg = /*[[${dto.msg}]]*/ '';
+
+            if (msg !== undefined && msg !== null && msg !== "") {
+                alert(msg);
+                location.href = "/login";
+            }
+
+            $("#btnSubmit").on("click", function () {
+                var selectedGrade = $("input[name='grade']:checked").val(); // 선택된 학년 값 가져오기
+                console.log("selectedGrade : ", selectedGrade)
+                console.log("typeof selectedGrade : ", typeof selectedGrade)
+                doSubmit(selectedGrade);
+            });
+        });
+
+        function doSubmit(selectedGrade) {
+            var radioButtons = document.querySelectorAll('input[type="radio"]');
+            var answers = "";
+
+            if (confirm("제출하시겠습니까?")) {
+
+                // 선택된 라디오 버튼만 확인하여 값을 조합
+                radioButtons.forEach(function (radioButton) {
+                    if (radioButton.checked && radioButton.name !== "grade") {
+                        var questionNumber = radioButton.name.split('-')[0];
+                        answers += questionNumber + "=" + radioButton.value + " ";
+                    }
+                });
+
+                console.log("answers : ", answers)
+                console.log("typeof answers : ", typeof answers)
+
+                // 선택된 라디오 버튼이 없는 경우 알림 표시
+                if (answers.trim() === "") { // 변경된 부분
+                    alert("모든 항목을 선택하세요.");
+                    return;
+                }
+
+                $.ajax({
+                    url: "http://www.career.go.kr/inspct/openapi/test/report",
+                    type: "post",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        "apikey": "e5f1cff81da07edcbd98784dfb546165",
+                        "qestrnSeq": "25",
+                        "trgetSe": "100207",
+                        "gender": gender,
+                        "grade": selectedGrade,
+                        "startDtm": startDtm,
+                        "answers": answers
+                    }),
+                    success: function (response) {
+                        // 성공적으로 데이터를 전송한 후 처리할 내용
+                        console.log(response);
+                        console.log("검사 결과 생성 url : ", response.RESULT.url)
+
+                        $.ajax({
+                            url: "/test/testGCGstudentSaveProc",
+                            type: "post",
+                            data: {
+                                "qestrnSeq": "직업가치관검사 고등학생",
+                                "url" : response.RESULT.url
+                            },
+                            success: function (secondResponse) {
+                                // 두 번째 AJAX 요청이 성공한 경우의 처리
+                                console.log("두번째 ajax도 성공했어용");
+                                alert("DB에 검사 결과 url 저장 완료!!!");
+                                location.href = "/test/testGCGstudentResult";
+                            }
+                        });
+
+                    }
+                });
+
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+<!-- Preloader Start -->
+<th:block th:replace="preloader"></th:block>
+<!-- Preloader End -->
+<!-- Header Start -->
+<th:block th:replace="header"></th:block>
+<!-- Header End -->
+<main>
+    <!--? slider Area Start-->
+    <section class="slider-area slider-area2">
+        <div class="slider-active">
+            <!-- Single Slider -->
+            <div class="single-slider slider-height2"
+                 style="background-image: url('/img/wingit_bg.jpg'); background-position: top;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-11 col-md-12">
+                            <div class="hero__caption hero__caption2">
+                                <h1 data-animation="bounceIn" data-delay="0.2s">직업흥미검사(K)</h1>
+                                <!-- breadcrumb Start-->
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/main">Home</a></li>
+                                        <li class="breadcrumb-item"><a href="/test/testHMstudent">직업흥미검사(K)</a></li>
+                                    </ol>
+                                </nav>
+                                <!-- breadcrumb End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Courses area start -->
+    <div class="courses-area section-padding40 fix">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mb-55"
+                         style="align-items: center; display: flex; justify-content: center;">
+                        <h3 style="margin: 0 3%;">학년을 선택하세요.</h3>
+                        <div style="margin: 0 2%;">
+                            <input type="radio" id="first" name="grade" value="1">
+                            <label for="first">1학년</label>
+                        </div>
+                        <div style="margin: 0 2%;">
+                            <input type="radio" id="second" name="grade" value="2">
+                            <label for="second">2학년</label>
+                        </div>
+                        <div style="margin: 0 2%;">
+                            <input type="radio" id="third" name="grade" value="3">
+                            <label for="third">3학년</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="divTable minimalistBlack">
+                    <div class="divTableHeading">
+                        <div class="divTableRow">
+                            <div class="divTableHead" style="width: 10%; text-align: center;">문항번호</div>
+                            <div class="divTableHead" style="text-align: center;">질문</div>
+                            <div class="divTableHead" style="text-align: center; width: 44%;">응답</div>
+                        </div>
+                    </div>
+                    <div class="divTableBody">
+                        <div class="divTableRow" th:each="dto : ${rList}">
+                            <div class="divTableCell" style="text-align: center;">[[${dto.questionSeq}]]</div>
+                            <div class="divTableCell" style="text-align: center;">[[${dto.question}]]</div>
+                            <div class="divTableCell"
+                                 style="text-align: center; display: flex; justify-content: center; padding: 2%;">
+                                <div style="margin: 0 4%;">
+                                    <input type="radio" th:id="${dto.questionSeq} + '-answer01'"
+                                           th:name="${dto.questionSeq} + '-answers'" value="1">
+                                    <label th:for="${dto.questionSeq} + '-answer01'">전혀 아니다</label>
+                                </div>
+                                <div style="margin: 0 4%;">
+                                    <input type="radio" th:id="${dto.questionSeq} + '-answer02'"
+                                           th:name="${dto.questionSeq} + '-answers'" value="2">
+                                    <label th:for="${dto.questionSeq} + '-answer02'">아니다</label>
+                                </div>
+                                <div style="margin: 0 4%;">
+                                    <input type="radio" th:id="${dto.questionSeq} + '-answer03'"
+                                           th:name="${dto.questionSeq} + '-answers'" value="3">
+                                    <label th:for="${dto.questionSeq} + '-answer03'">그저 그렇다</label>
+                                </div>
+                                <div style="margin: 0 4%;">
+                                    <input type="radio" th:id="${dto.questionSeq} + '-answer04'"
+                                           th:name="${dto.questionSeq} + '-answers'" value="4" checked>
+                                    <label th:for="${dto.questionSeq} + '-answer04'">그렇다</label>
+                                </div>
+                                <div style="margin: 0 4%;">
+                                    <input type="radio" th:id="${dto.questionSeq} + '-answer05'"
+                                           th:name="${dto.questionSeq} + '-answers'" value="5" checked>
+                                    <label th:for="${dto.questionSeq} + '-answer05'">매우 그렇다</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 페이지네이션 영역-->
+                <!--<div style="display: flex">
+                    <div class="mx-auto">
+                        <ul class="pagination pagination-primary" id="pagination">
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/test/testHMstudent?page=1}">&laquo;</a>
+                            </li>
+                            &lt;!&ndash; 이전 페이지로 이동하는 링크 &ndash;&gt;
+                            <li class="page-item" th:if="${currentPage > 1}">
+                                <a class="page-link"
+                                   th:attr="onclick='pageMove(\'' + ${currentPage - 1} + '\')'">&lt;</a>
+                            </li>
+                            &lt;!&ndash; 현재 페이지 주변에 페이지 번호 링크 표시 &ndash;&gt;
+                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                                th:class="${pageNumber == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:attr="onclick='pageMove(\'' + ${pageNumber} + '\')'"
+                                   th:text="${pageNumber}"></a>
+                            </li>
+                            &lt;!&ndash; 다음 페이지로 이동하는 링크 &ndash;&gt;
+                            <li class="page-item" th:if="${currentPage < totalPages}">
+                                <a class="page-link" th:onclick="pageMove('${currentPage + 1}')">&gt;</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:onclick="pageMove('${totalPages}')">&raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>-->
+
+                <div style="
+                        margin-top: 4%;
+                        left: 42%;
+                        position: relative;
+                        width: 15%;
+                        display: flex;
+                        justify-content: center;
+                        margin-bottom: 8%;">
+                    <button id="btnSubmit" type="button"
+                            style="width: 88%; padding-top: 8%; padding-bottom: 8%; background-color: orange; border: none;
+                            border-radius: 21px; font-size: 14pt; font-weight: bold;">
+                        제출하기
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</main>
+<footer>
+    <div class="footer-wrappper footer-bg">
+        <!-- Footer Start-->
+        <th:block th:replace="footer"></th:block>
+        <!-- Footer End-->
+    </div>
+</footer>
+<!-- Scroll Up -->
+<div id="back-top">
+    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+</div>
+
+<!-- JS here -->
+<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+<!-- Jquery, Popper, Bootstrap -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Jquery Mobile Menu -->
+<script src="/js/jquery.slicknav.min.js"></script>
+
+<!-- Jquery Slick , Owl-Carousel Plugins -->
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<!-- One Page, Animated-HeadLin -->
+<script src="/js/wow.min.js"></script>
+<script src="/js/animated.headline.js"></script>
+<script src="/js/jquery.magnific-popup.js"></script>
+
+<!-- Date Picker -->
+<script src="/js/gijgo.min.js"></script>
+<!-- Nice-select, sticky -->
+<script src="/js/jquery.nice-select.min.js"></script>
+<script src="/js/jquery.sticky.js"></script>
+<!-- Progress -->
+<script src="/js/jquery.barfiller.js"></script>
+
+<!-- counter , waypoint,Hover Direction -->
+<script src="/js/jquery.counterup.min.js"></script>
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/jquery.countdown.min.js"></script>
+<script src="/js/hover-direction-snake.min.js"></script>
+
+<!-- contact js -->
+<script src="/js/contact.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/mail-script.js"></script>
+<script src="/js/jquery.ajaxchimp.min.js"></script>
+
+<!-- Jquery Plugins, main Jquery -->
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>

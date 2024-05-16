@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.persistance.mapper.ITestMapper">
+
+    <!-- 직업흥미검사(K) 고등학생 문항 삽입하기 -->
+    <insert id="insertHMstudent" parameterType="TestDTO">
+        INSERT INTO TEST_HM_STUDENT
+        VALUES (
+                (SELECT COALESCE(MAX(A.QUESTION_SEQ),0)+1 FROM TEST_HM_STUDENT A),
+                #{question},
+                #{answer01},
+                #{answer02},
+                #{answer03},
+                #{answer04}
+               )
+    </insert>
+
+    <!-- 직업가치관검사 고등학생 문항 삽입하기 -->
+    <insert id="insertGCGstudent" parameterType="TestDTO">
+        INSERT INTO TEST_GCG_STUDENT
+        VALUES (
+                   (SELECT COALESCE(MAX(A.QUESTION_SEQ),0)+1 FROM TEST_GCG_STUDENT A),
+                   #{question},
+                   #{answer01},
+                   #{answer02},
+                   #{answer03},
+                   #{answer04},
+                   #{answer05}
+               )
+    </insert>
+
+    <!-- 직업흥미검사(K) 고등학생 문항 삽입하기 -->
+    <insert id="insertGCGadult" parameterType="TestDTO">
+        INSERT INTO TEST_GCG_ADULT
+        VALUES (
+                   (SELECT COALESCE(MAX(A.QUESTION_SEQ),0)+1 FROM TEST_GCG_ADULT A),
+                   #{question},
+                   #{answer01},
+                   #{answer02},
+                   #{answer03},
+                   #{answer04}
+               )
+    </insert>
+    
+    <select id="getHMstudentList" resultType="TestDTO">
+        SELECT QUESTION_SEQ, QUESTION, ANSWER01, ANSWER02, ANSWER03, ANSWER04
+        FROM TEST_HM_STUDENT
+        ORDER BY QUESTION_SEQ ASC
+    </select>
+
+    <select id="getGCGstudentList" resultType="TestDTO">
+        SELECT QUESTION_SEQ, QUESTION, ANSWER01, ANSWER02, ANSWER03, ANSWER04, ANSWER05
+        FROM TEST_GCG_STUDENT
+        ORDER BY QUESTION_SEQ ASC
+    </select>
+
+    <select id="getGCGadultList" resultType="TestDTO">
+        SELECT QUESTION_SEQ, QUESTION, ANSWER01, ANSWER02, ANSWER01FULL, ANSWER02FULL
+        FROM TEST_GCG_ADULT
+        ORDER BY QUESTION_SEQ ASC
+    </select>
+
+    <select id="getTesterInfo" parameterType="UserInfoDTO" resultType="UserInfoDTO">
+        SELECT USER_ID, IDENTITY, GENDER
+        FROM USER_INFO
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <insert id="insertTestResult" parameterType="TestDTO">
+        INSERT INTO TEST_RESULT
+        VALUES (
+                (SELECT COALESCE(MAX(A.TEST_SEQ),0)+1 FROM TEST_RESULT A),
+                #{userId},
+                #{qestrnSeq},
+                #{url}
+               )
+    </insert>
+
+</mapper>

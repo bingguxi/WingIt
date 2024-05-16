@@ -1,0 +1,180 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>WingIt 직업흥미검사(K) 고등학생 검사결과</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/progressbar_barfiller.css">
+    <link rel="stylesheet" href="/css/gijgo.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/animated-headline.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table.css"/>
+
+    <style>
+
+        .border-btn:hover {
+            color: #fff;
+        }
+
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+
+            const url = /*[[${session.URL}]]*/ null;
+            console.log("세션 url 값 : ", url);
+
+            // 진로심리검사 결과 조회하기
+            $("#btnResult").on("click", function () {
+                location.href = url;
+            })
+
+        })
+
+    </script>
+
+</head>
+
+<body>
+<!-- Preloader Start -->
+<th:block th:replace="preloader"></th:block>
+<!-- Preloader End -->
+<!-- Header Start -->
+<th:block th:replace="header"></th:block>
+<!-- Header End -->
+<main>
+    <!--? slider Area Start-->
+    <section class="slider-area slider-area2">
+        <div class="slider-active">
+            <!-- Single Slider -->
+            <div class="single-slider slider-height2"
+                 style="background-image: url('/img/wingit_bg.jpg'); background-position: top;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-11 col-md-12">
+                            <div class="hero__caption hero__caption2">
+                                <h1 data-animation="bounceIn" data-delay="0.2s">직업흥미검사(K)</h1>
+                                <!-- breadcrumb Start-->
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/main">Home</a></li>
+                                        <li class="breadcrumb-item"><a href="/test/testHMstudent">직업흥미검사(K)</a></li>
+                                    </ol>
+                                </nav>
+                                <!-- breadcrumb End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Courses area start -->
+    <div class="courses-area section-padding40 fix">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mb-55"
+                         style="align-items: center; display: flex; justify-content: center;">
+                        <h3 style="margin: 0 3%; color: black; font-size: 16pt;">검사가 완료되었습니다.</h3>
+
+                    </div>
+                    <div class="section-tittle text-center mb-55"
+                         style="align-items: center; display: flex; justify-content: center;">
+                        <div>
+                            <button id="btnResult" type="button" class="border-btn"
+                                    style="font-size: 14pt; font-weight: bold;
+                                    border: 2px solid #FD6F22;">
+                                검사 결과 보러가기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--<div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-8">
+                    <div class="section-tittle text-center mt-40">
+                        <a href="#" class="border-btn">Load More</a>
+                    </div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+</main>
+<footer>
+    <div class="footer-wrappper footer-bg">
+        <!-- Footer Start-->
+        <th:block th:replace="footer"></th:block>
+        <!-- Footer End-->
+    </div>
+</footer>
+<!-- Scroll Up -->
+<div id="back-top">
+    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+</div>
+
+<!-- JS here -->
+<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+<!-- Jquery, Popper, Bootstrap -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Jquery Mobile Menu -->
+<script src="/js/jquery.slicknav.min.js"></script>
+
+<!-- Jquery Slick , Owl-Carousel Plugins -->
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<!-- One Page, Animated-HeadLin -->
+<script src="/js/wow.min.js"></script>
+<script src="/js/animated.headline.js"></script>
+<script src="/js/jquery.magnific-popup.js"></script>
+
+<!-- Date Picker -->
+<script src="/js/gijgo.min.js"></script>
+<!-- Nice-select, sticky -->
+<script src="/js/jquery.nice-select.min.js"></script>
+<script src="/js/jquery.sticky.js"></script>
+<!-- Progress -->
+<script src="/js/jquery.barfiller.js"></script>
+
+<!-- counter , waypoint,Hover Direction -->
+<script src="/js/jquery.counterup.min.js"></script>
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/jquery.countdown.min.js"></script>
+<script src="/js/hover-direction-snake.min.js"></script>
+
+<!-- contact js -->
+<script src="/js/contact.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/mail-script.js"></script>
+<script src="/js/jquery.ajaxchimp.min.js"></script>
+
+<!-- Jquery Plugins, main Jquery -->
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>
