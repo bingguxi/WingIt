@@ -1,0 +1,196 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Courses | Education</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/progressbar_barfiller.css">
+    <link rel="stylesheet" href="/css/gijgo.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/animated-headline.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+
+        .header-sticky.sticky-bar {
+            background: darkslategray;
+            filter: opacity(0.9);
+        }
+
+    </style>
+
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+
+            // 로그인 정보가 없으면, alert 띄우고 로그인 창으로 보내기
+            const msg = /*[[${dto.msg}]]*/ '';
+
+            if (msg !== undefined && msg !== null && msg !== "") {
+                alert(msg);
+                location.href = "/login";
+            }
+
+            const identity = /*[[${session.SS_IDENTITY}]]*/ null;
+            console.log("세션 identity 값 : ", identity);
+
+        });
+
+    </script>
+
+</head>
+
+<body>
+<!-- ? Preloader Start -->
+<div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="preloader-inner position-relative">
+            <div class="preloader-circle"></div>
+            <div class="preloader-img pere-text">
+                <img src="/img/logo/shortcut-icon.png" alt="">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Preloader Start -->
+<header>
+    <!-- Header Start -->
+    <th:block th:replace="header"></th:block>
+    <!-- Header End -->
+</header>
+<main style="background-image: url('/img/wingit_bg.jpg');">
+    <!--? slider Area Start-->
+    <section class="slider-area ">
+        <div class="slider-active">
+            <!-- Single Slider -->
+            <div class="single-slider slider-height d-flex align-items-center" style="width: 100%;">
+                <div class="container">
+                    <div class="row" style="width: 105%;">
+                        <div class="col-xl-6 col-lg-7 col-md-12">
+                            <div class="hero__caption">
+                                <h1 data-animation="fadeInLeft" data-delay="0.2s" style="font-size: 35pt;">꿈에 날개를 달아주는
+                                    공간</h1>
+                                <p data-animation="fadeInLeft" data-delay="0.4s">나의 적성에 맞는 진로를 찾고, 많은 사람들과 함께 그 꿈을
+                                    이루어가세요!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ? services-area -->
+    <div class="services-area" style="margin-top: -10%; padding-bottom: 5%;">
+        <div class="container">
+            <div class="row justify-content-sm-center">
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                    <div class="single-services mb-30">
+                        <div class="features-icon">
+                            <img src="/img/logo/test_logo.png" alt="">
+                        </div>
+                        <div class="features-caption">
+                            <h3>진로심리검사</h3>
+                            <p>커리어넷에서 제공하는 검사를 할 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                    <div class="single-services mb-30">
+                        <div class="features-icon">
+                            <img src="/img/logo/dictionary_logo.png" alt="">
+                        </div>
+                        <div class="features-caption">
+                            <h3>직업사전</h3>
+                            <p>다양한 직업을 찾아볼 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                    <div class="single-services mb-30">
+                        <div class="features-icon">
+                            <img src="/img/logo/study_with_me_logo.png" alt="">
+                        </div>
+                        <div class="features-caption">
+                            <h3>Study With Me</h3>
+                            <p>다른 사람들과 함께 공부할 수 있습니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+<footer>
+    <div class="footer-wrappper footer-bg">
+        <!-- Footer Start-->
+        <th:block th:replace="footer"></th:block>
+        <!-- Footer End-->
+    </div>
+</footer>
+<!-- Scroll Up -->
+<div id="back-top">
+    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+</div>
+
+<!-- JS here -->
+<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+<!-- Jquery, Popper, Bootstrap -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Jquery Mobile Menu -->
+<script src="/js/jquery.slicknav.min.js"></script>
+
+<!-- Jquery Slick , Owl-Carousel Plugins -->
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<!-- One Page, Animated-HeadLin -->
+<script src="/js/wow.min.js"></script>
+<script src="/js/animated.headline.js"></script>
+<script src="/js/jquery.magnific-popup.js"></script>
+
+<!-- Date Picker -->
+<script src="/js/gijgo.min.js"></script>
+<!-- Nice-select, sticky -->
+<script src="/js/jquery.nice-select.min.js"></script>
+<script src="/js/jquery.sticky.js"></script>
+<!-- Progress -->
+<script src="/js/jquery.barfiller.js"></script>
+
+<!-- counter , waypoint,Hover Direction -->
+<script src="/js/jquery.counterup.min.js"></script>
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/jquery.countdown.min.js"></script>
+<script src="/js/hover-direction-snake.min.js"></script>
+
+<!-- contact js -->
+<script src="/js/contact.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/mail-script.js"></script>
+<script src="/js/jquery.ajaxchimp.min.js"></script>
+
+<!-- Jquery Plugins, main Jquery -->
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>
