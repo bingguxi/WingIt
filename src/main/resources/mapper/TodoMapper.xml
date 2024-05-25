@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTO Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.persistance.mapper.ITodoMapper">
+
+    <!-- 할 일 목록 조회하기 -->
+    <select id="getTodoList" resultType="TodoDTO">
+        SELECT TODO_SEQ, USER_ID, CONTENT, COMPLETE
+        FROM TODO
+        WHERE USER_ID = #{userId}
+        ORDER BY TODO_SEQ ASC
+    </select>
+
+    <!-- 할 일 추가하기 -->
+    <insert id="insertTodo" parameterType="TodoDTO">
+        INSERT INTO TODO (
+                          TODO_SEQ,
+                          USER_ID,
+                          CONTENT,
+                          COMPLETE
+                          )
+        VALUES (
+                (SELECT COALESCE(MAX(A.TODO_SEQ),0)+1 FROM TODO A WHERE USER_ID = #{userId}),
+                #{userId},
+                #{content},
+                #{complete}
+               )
+    </insert>
+
+    <!-- 할 일 완료 / 완료해제 -->
+    <update id="completeTodo" parameterType="TodoDTO">
+        UPDATE TODO
+        SET COMPLETE = #{complete}
+        WHERE USER_ID = #{userId}
+        AND TODO_SEQ = #{todoSeq}
+    </update>
+
+    <delete id="deleteTodo" parameterType="TodoDTO">
+        DELETE FROM TODO
+        WHERE USER_ID = #{userId}
+        AND TODO_SEQ = #{todoSeq}
+    </delete>
+
+</mapper>
