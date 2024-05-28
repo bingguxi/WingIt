@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="${roomName + ' 채팅방 입장'}"></title>
+  <link rel="stylesheet" href="/css/table.css"/>
+  <script src="/js/jquery-3.6.0.min.js" type="text/javascript"></script>
+  <script src="/js/peerConfig.js" type="text/javascript"></script>
+
+  <!-- 웹 페이지에서 WebSocket 클라이언트 라이브러리 로드 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+  <script th:inline="javascript">
+    let data = {}; // 전송 데이터(JSON)
+    let ws; // 웹소켓 객체
+    const roomName = [[${roomName}]]; // 채팅룸 이름
+    console.log("roomName : ", roomName)
+
+    const userName = [[${userName}]]; // 채팅유저 이름
+    console.log("userName : ", userName)
+
+    $(document).ready(function () {
+
+      // 카메라 On 버튼 클릭 시
+      $("#cameraOnBtn").on("click", function () {
+        toggleCamera(true);
+      });
+
+      // 카메라 Off 버튼 클릭 시
+      $("#cameraOffBtn").on("click", function () {
+        toggleCamera(false);
+      });
+
+      // 마이크 On 버튼 클릭 시
+      $("#micOnBtn").on("click", function () {
+        toggleMic(true);
+      });
+
+      // 마이크 Off 버튼 클릭 시
+      $("#micOffBtn").on("click", function () {
+        toggleMic(false);
+      });
+
+
+      // 채팅!!!!!!!!!!!!!!!!!
+      // 웹소켓 객체를 생성하는 중
+      if (ws !== undefined && ws.readyState !== WebSocket.CLOSED) {
+        console.log("WebSocket is already opened.");
+        return;
+      }
+
+      // 접속 URL 예 : ws://localhost:10000/ws/테스트방/별명
+      ws = new WebSocket("ws://" + location.host + "/ws/" + roomName + "/" + userName);
+
+      // 웹소켓 열기
+      ws.onopen = function (event) {
+        if (event.data === undefined)
+          return;
+
+        console.log(event.data)
+      };
+
+      // 웹소캣으로부터 메세지를 받을 때마다 실행됨
+      ws.onmessage = function (msg) {
+
+        // 웹소켓으로부터 받은 데이터를 JSON 구조로 변환하기
+        let data = JSON.parse(msg.data);
+
+        if (data.name === userName) { // 내가 발송한 채팅 메시지는 파란색 글씩
+          $("#chat").append("<div>" +
+                  "<span style='color: blue'><b>[보낸 사람] : </b></span>" +
+                  "<span style='color: blue'> 나 </span>" +
+                  "<span style='color: blue'><b>[발송 메시지] : </b></span>" +
+                  "<span style='color: blue'>" + data.msg + " </span>" +
+                  "<span style='color: blue'><b>[발송시간] : </b></span>" +
+                  "<span style='color: blue'>" + data.date + " </span>" +
+                  "</div>");
+        } else if (data.name === "관리자") { // 관리자가 발송한 채팅 메시지는 빨간색 글씩
+          $("#chat").append("<div>" +
+                  "<span style='color: red'><b>[보낸 사람] : </b></span>" +
+                  "<span style='color: red'>" + data.name + "</span>" +
+                  "<span style='color: red'><b>[발송 메시지] : </b></span>" +
+                  "<span style='color: red'>" + data.msg + " </span>" +
+                  "<span style='color: red'><b>[발송시간] : </b></span>" +
+                  "<span style='color: red'>" + data.date + " </span>" +
+                  "</div>");
+        } else {
+          $("#chat").append("<div>" + // 그 외 채팅참여자들이 발송한 채팅 메시지는 검정색
+                  "<span><b>[보낸 사람] : </b></span>" +
+                  "<span>" + data.name + " </span>" +
+                  "<span><b>[수신 메시지] : </b></span>" +
+                  "<span>" + data.msg + " </span>" +
+                  "<span><b>[발송시간] : </b></span>" +
+                  "<span>" + data.date + " </span>" +
+                  "</div>");
+        }
+      };
+
+      $("#btnSend").on("click", function () {
+        data.name = userName; // 별명
+        data.msg = $("#msg").val();  // 입력한 메시지
+
+        let chatMsg = JSON.stringify(data); // 데이터 구조를 JSON 형태로 변경하기
+
+        ws.send(chatMsg); // 채팅 메시지 전송하기
+
+        $("#msg").val(""); // 채팅 메시지 전송 후, 입력한 채팅내용 지우기
+      });
+    });
+
+    // 카메라 On/Off 함수
+    const toggleCamera = async (toggle) => {
+      if (localStream !== undefined) {
+        const videoTracks = localStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+          videoTracks[0].enabled = toggle; // 카메라 On/Off
+        }
+      }
+    };
+
+    // 마이크 On/Off 함수
+    const toggleMic = async (toggle) => {
+      if (localStream !== undefined) {
+        const audioTracks = localStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+          audioTracks[0].enabled = toggle; // 마이크 On/Off
+        }
+      }
+    };
+
+  </script>
+</head>
+<body>
+<h1 th:text="${userName + '님! ' + roomName + ' 입장을 환영합니다.'}"></h1>
+<hr/>
+<br/><br/>
+
+<button type="button" id="startSteamBtn" style="display: none;">start Streams</button>
+
+<button id="cameraOnBtn">카메라 On</button>
+<button id="cameraOffBtn">카메라 Off</button>
+<button id="micOnBtn">마이크 On</button>
+<button id="micOffBtn">마이크 Off</button>
+
+<video id="localStream" autoplay playsinline controls style="display: none;"></video>
+
+<div id="remoteStreamDiv">
+</div>
+
+<br/><br/>
+<div class="divTable minimalistBlack">
+  <div class="divTableHeading">
+    <div class="divTableRow">
+      <div class="divTableHead">대화 내용</div>
+    </div>
+  </div>
+  <div class="divTableBody">
+    <div class="divTableRow">
+      <div class="divTableCell" id="chat"></div>
+    </div>
+  </div>
+</div>
+<br/><br/>
+<div class="divTable minimalistBlack">
+  <div class="divTableBody">
+    <div class="divTableRow">
+      <div class="divTableCell">전달할 메시지</div>
+      <div class="divTableCell">
+        <input type="text" id="msg">
+        <button id="btnSend">메시지 전송</button>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
