@@ -32,9 +32,180 @@
             filter: opacity(0.9);
         }
 
+        #floating-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        #floating-icon:hover {
+            background-color: #0056b3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* 여기부터 모달창 안 내용 */
+        /* Include the padding and border in an element's total width and height */
+        #myDIV, #myUL {
+            box-sizing: border-box;
+        }
+
+        /* Remove margins and padding from the list */
+        #myUL {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Style the list items */
+        #myUL li {
+            cursor: pointer;
+            position: relative;
+            padding: 12px 8px 12px 40px;
+            background: #eee;
+            font-size: 18px;
+            transition: 0.2s;
+
+            /* make the list items unselectable */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Set all odd list items to a different color (zebra-stripes) */
+        #myUL li:nth-child(odd) {
+            background: #f9f9f9;
+        }
+
+        /* Darker background-color on hover */
+        #myUL li:hover {
+            background: #ddd;
+        }
+
+        /* When clicked on, add a background color and strike out text */
+        #myUL li.checked {
+            background: #888;
+            color: #fff;
+            text-decoration: line-through;
+        }
+
+        /* Add a "checked" mark when clicked on */
+        #myUL li.checked::before {
+            content: '';
+            position: absolute;
+            border-color: #fff;
+            border-style: solid;
+            border-width: 0 2px 2px 0;
+            top: 10px;
+            left: 16px;
+            transform: rotate(45deg);
+            height: 15px;
+            width: 7px;
+        }
+
+        /* Style the close button */
+        .close {
+            position: absolute;
+            right: 0;
+            top: 0;
+            padding: 12px 16px 12px 16px;
+        }
+
+        .close:hover {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Style the header */
+        .header {
+            background-color: #f44336;
+            padding: 30px 40px;
+            color: white;
+            text-align: center;
+        }
+
+        /* Clear floats after the header */
+        .header:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Style the input */
+        #myInput {
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            width: 75%;
+            padding: 10px;
+            float: left;
+            font-size: 16px;
+        }
+
+        /* Style the "Add" button */
+        .addBtn {
+            padding: 10px;
+            width: 25%;
+            background: #d9d9d9;
+            color: #555;
+            float: left;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 0;
+        }
+
+        .addBtn:hover {
+            background-color: #bbb;
+        }
+
     </style>
 
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/main.js"></script>
     <script th:inline="javascript">
 
         // HTML로딩이 완료되고, 실행됨
@@ -50,6 +221,225 @@
 
             const identity = /*[[${session.SS_IDENTITY}]]*/ null;
             console.log("세션 identity 값 : ", identity);
+
+            // 투두리스트 모달창 열기
+            const modal = document.getElementById('modal');
+            const floatingIcon = document.getElementById('floating-icon');
+            const closeButton = document.querySelector('.modal-close');
+
+            // 투두리스트 조회하기
+            $("#floating-icon").on("click", function () {
+
+                // 모달 표시
+                modal.style.display = 'block';
+
+                $.ajax({
+
+                    url: "/todo/getTodoList",
+                    type: "post",
+                    dataType: "JSON"
+
+                }).then(function (list) { // 성공
+
+                    // 기존 목록 비우기
+                    $("#myUL").empty();
+
+                    // 투두리스트 목록 생성
+                    for (const dto of list) {
+
+                        // complete 값에 따라 클래스 설정
+                        const checkedClass = dto.complete === "yes" ? "checked" : "";
+
+                        // li 요소 생성
+                        var li = document.createElement("li");
+                        li.className = `todo ${checkedClass}`; // 템플릿 리터럴을 사용하여 클래스 설정
+                        var t = document.createTextNode(dto.content);
+                        li.appendChild(t);
+
+                        // li 요소를 목록에 추가
+                        document.getElementById("myUL").appendChild(li);
+
+                        // 닫기 버튼 생성 및 추가
+                        var span = document.createElement("SPAN");
+                        var txt = document.createTextNode("\u00D7");
+                        span.className = "close";
+                        span.appendChild(txt);
+                        li.appendChild(span);
+
+
+                        // $("#myUL").append(
+                        //     `<li class="${listItemClass}">${dto.content}</li><span class=\"close\">\u00D7</span>`
+                        // );
+                        // $("#myUL").append(`<span class=\"close\">\u00D7</span>`);
+
+                    }
+
+                });
+
+            });
+
+            // 투두리스트 삽입하기
+            $("#addBtn").on("click", function () {
+
+                var li = document.createElement("li");
+                li.className = "todo";
+                var inputValue = document.getElementById("myInput").value;
+                var t = document.createTextNode(inputValue);
+                li.appendChild(t);
+
+                if (inputValue === '') {
+
+                    alert("추가할 내용을 작성해주세요!");
+
+                } else {
+
+                    document.getElementById("myUL").appendChild(li);
+
+                    $.ajax({
+
+                        url: "/todo/insertTodo",
+                        type: "post",
+                        data: { content : inputValue }
+
+                    })
+
+                }
+
+                document.getElementById("myInput").value = "";
+
+                var span = document.createElement("SPAN");
+                var txt = document.createTextNode("\u00D7");
+                span.className = "close";
+                span.appendChild(txt);
+                li.appendChild(span);
+
+            });
+
+            var list = document.getElementById('myUL');
+            list.addEventListener('click', function(event) {
+
+                // 클릭된 li 요소의 인덱스 계산
+                var todos = list.getElementsByClassName('todo');
+                var todoSeq = Array.prototype.indexOf.call(todos, event.target) + 1;
+
+                // 투두리스트 항목 완료 / 완료해제 업데이트하기
+                if (event.target.tagName === 'LI') {
+
+                    // 클릭된 요소의 클래스 이름에 "checked"가 포함되어 있는지 확인
+                    var classList = event.target.classList;
+                    var complete = classList.contains('checked') ? "yes" : "no";
+
+                    $.ajax({
+
+                        url: "todo/completeTodo",
+                        type: "post",
+                        data: {
+                            todoSeq : todoSeq,
+                            complete : complete
+                        }
+
+                    });
+
+                    // 'checked' 클래스 토글
+                    event.target.classList.toggle('checked');
+
+                }
+
+                // 투두리스트 항목 삭제하기
+                if (event.target.classList.contains('close')) {
+
+                    console.log("현재 close 클릭되었구요, 클릭된 todoSeq는? ", todoSeq);
+
+                    var parentLi = event.target.parentElement;
+
+                    // 부모 li 요소의 인덱스 계산
+                    var todos = list.getElementsByClassName('todo');
+                    var todoSeq = Array.prototype.indexOf.call(todos, parentLi) + 1;
+
+                    // AJAX 요청 보내기
+                    $.ajax({
+
+                        url: "todo/deleteTodo",
+                        type: "post",
+                        data: { todoSeq : todoSeq }, // 인덱스를 data에 포함하여 전송
+
+                    });
+
+                    // 항목 삭제
+                    parentLi.style.display = "none";
+                }
+
+            }, false);
+
+
+            // 투두리스트 항목 삭제하기
+            // var list = document.getElementById('myUL');
+            // list.addEventListener('click', function(event) {
+            //     if (event.target.classList.contains('close')) {
+            //         // 클릭된 close 버튼의 부모 li 요소의 인덱스 계산
+            //         var items = list.getElementsByTagName('li');
+            //         var parentLi = event.target.parentElement;
+            //         var index = Array.prototype.indexOf.call(items, parentLi);
+            //
+            //         // AJAX 요청 보내기
+            //         $.ajax({
+            //             url: "todo/deleteTodo",
+            //             type: "post",
+            //             data: { index: index }, // 인덱스를 data에 포함하여 전송
+            //             success: function(response) {
+            //                 // 서버로부터의 응답 처리 (필요시)
+            //                 console.log(response);
+            //             },
+            //             error: function(error) {
+            //                 // 에러 처리 (필요시)
+            //                 console.error(error);
+            //             }
+            //         });
+            //
+            //         // 항목 삭제
+            //         parentLi.style.display = "none";
+            //     }
+            // }, false);
+
+
+
+
+            // 투두리스트 항목 삭제하기
+            // var close = document.getElementsByClassName("close");
+            // var i;
+            // for (i = 0; i < close.length; i++) {
+            //     close[i].onclick = function() {
+            //
+            //
+            //
+            //         var div = this.parentElement;
+            //         div.style.display = "none";
+            //     }
+            // }
+
+
+
+            closeButton.onclick = function() {
+                modal.style.display = 'none';
+            }
+
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+
+            // 투두리스트 모달창 안 내용
+            // Create a "close" button and append it to each list item
+            // var myNodelist = document.getElementsByTagName("LI");
+            // var i;
+            // for (i = 0; i < myNodelist.length; i++) {
+            //     var span = document.createElement("SPAN");
+            //     var txt = document.createTextNode("\u00D7");
+            //     span.className = "close";
+            //     span.appendChild(txt);
+            //     myNodelist[i].appendChild(span);
+            // }
 
         });
 
@@ -145,9 +535,32 @@
         <!-- Footer End-->
     </div>
 </footer>
+
+<!-- Todo List -->
+<div id="floating-icon">&#x1F4AC;</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+
+        <div id="myDIV" class="header">
+            <h2>My To Do List</h2>
+            <input type="text" id="myInput" name="todo" placeholder="Title...">
+            <span id="addBtn" class="addBtn">Add</span>
+        </div>
+
+        <ul id="myUL">
+
+        </ul>
+
+    </div>
+</div>
+
 <!-- Scroll Up -->
 <div id="back-top">
-    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+    <a title="Go to Top" href="#">
+        <!--<i class="fas fa-level-up-alt"></i>-->
+    </a>
 </div>
 
 <!-- JS here -->
@@ -190,7 +603,7 @@
 
 <!-- Jquery Plugins, main Jquery -->
 <script src="/js/plugins.js"></script>
-<script src="/js/main.js"></script>
+<!--<script src="/js/main.js"></script>-->
 
 </body>
 </html>

@@ -35,6 +35,8 @@ public class TodoService implements ITodoService {
         List<TodoDTO> rList = Optional.ofNullable(todoMapper.getTodoList(pDTO))
                         .orElseGet(ArrayList::new);
 
+        log.info("rList : " + rList);
+
         log.info(this.getClass().getName() + ".getTodoList End!");
 
         return rList;
@@ -53,7 +55,9 @@ public class TodoService implements ITodoService {
 
         String complete = "no";
 
-        pDTO.toBuilder().complete(complete).build();
+        pDTO = pDTO.toBuilder().complete(complete).build();
+
+        log.info("toBuilder로 complete 추가한 뒤의 pDTO : " + pDTO);
 
         res = todoMapper.insertTodo(pDTO);
 
@@ -84,9 +88,8 @@ public class TodoService implements ITodoService {
 
         }
 
-        // TODO 변경된 complete 값이 들어가는지 확인!
-        // TODO 안 들어가면 새로운 DTO 만들어서 값 3개(usereId, todoSeq, 변경된 complete) 넣어주기
-        pDTO.toBuilder().complete(complete).build();
+        // 변경된 complete 값 넣기
+        pDTO = pDTO.toBuilder().complete(complete).build();
         log.info("변경된 complete 값으로 pDTO가 빌드되었는지 확인 : " + pDTO.toString());
 
         todoMapper.completeTodo(pDTO);

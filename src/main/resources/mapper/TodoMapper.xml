@@ -4,7 +4,7 @@
 <mapper namespace="kopo.poly.persistance.mapper.ITodoMapper">
 
     <!-- 할 일 목록 조회하기 -->
-    <select id="getTodoList" resultType="TodoDTO">
+    <select id="getTodoList" parameterType="TodoDTO" resultType="TodoDTO">
         SELECT TODO_SEQ, USER_ID, CONTENT, COMPLETE
         FROM TODO
         WHERE USER_ID = #{userId}
