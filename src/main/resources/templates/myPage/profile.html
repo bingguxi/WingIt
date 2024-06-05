@@ -103,8 +103,11 @@
     </section>
     <!-- Courses area start -->
     <div class="courses-area section-padding40 fix" style="background-color: floralwhite; padding-top: 3%;">
+
         <div class="container">
-            <div class="row justify-content-center">
+            <div class="row">
+                <th:block th:replace="myPageSideBar"></th:block>
+
                 <div class="col-lg-7"
                      style="display: flex; justify-content: center; border: 5px solid #FD6F22; border-radius: 30px; padding: 3%;font-size: 13pt;">
 
@@ -129,9 +132,18 @@
                         <br/>
                         <div>[[${rDTO.nickname}]]</div>
                         <br/>
-                        <div>[[${rDTO.identity}]]</div>
+                        <div th:switch="${rDTO.identity}">
+                            <div th:case="'highschool'">고등학생</div>
+                            <div th:case="'college'">대학생</div>
+                            <div th:case="'adult'">일반</div>
+                            <div th:case="*">알 수 없음</div> <!-- 기본값 설정 -->
+                        </div>
                         <br/>
-                        <div>[[${rDTO.gender}]]</div>
+                        <div th:switch="${rDTO.gender}">
+                            <div th:case="'male'">남</div>
+                            <div th:case="'female'">여</div>
+                            <div th:case="*">알 수 없음</div> <!-- 기본값 설정 -->
+                        </div>
                         <br/>
                         <div>[[${rDTO.email}]]</div>
                     </div>

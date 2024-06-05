@@ -1,8 +1,8 @@
 package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.dto.*;
+import kopo.poly.service.IMongoService;
 import kopo.poly.service.IProfileService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -26,6 +28,8 @@ import java.util.Optional;
 public class ProfileController {
 
     private final IProfileService profileService;
+
+    private final IMongoService mongoService;
 
     @GetMapping(value = "")
     public String getProfile(ModelMap modelMap, HttpSession session) throws Exception {
@@ -54,7 +58,7 @@ public class ProfileController {
 
         log.info(this.getClass().getName() + ".getProfile End!");
 
-        return "/profile/profile";
+        return "/myPage/profile";
     }
 
 
@@ -85,7 +89,7 @@ public class ProfileController {
 
         log.info(this.getClass().getName() + "profileUpdate End!");
 
-        return "/profile/profileUpdate";
+        return "/myPage/profileUpdate";
     }
 
 
@@ -164,9 +168,13 @@ public class ProfileController {
             log.info("SS_USER_ID : " + userId);
 
             UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+            ChatDTO chatDTO = ChatDTO.builder().name(userId).build();
 
             // 회원정보 삭제하기 메서드 호출
             profileService.deleteUserInfo(pDTO);
+
+            // 몽고디비 채팅내역 삭제 메서드 호출
+            mongoService.deleteChatInfo(chatDTO);
 
             msg = "탈퇴되었습니다.";
 
@@ -202,6 +210,129 @@ public class ProfileController {
         }
 
         return rDTO;
+    }
+
+    @GetMapping(value = "getTestRecordList")
+    public String getTestRecordList(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".getTestRecordList Start!");
+
+        MsgDTO dto = null;
+        String msg = "";
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        log.info("userId : " + userId);
+
+        if (userId != null) {
+
+            TestResultDTO pDTO = TestResultDTO.builder().userId(userId).build();
+
+            List<TestResultDTO> rList = Optional.ofNullable(profileService.getTestRecordList(pDTO))
+                    .orElseGet(ArrayList::new);
+
+            log.info("rList : " + rList);
+
+            // 모든 DTO 요소의 testTime 변수 값 뒤에 .0 붙는거 지우고 다시 rList에 추가하기!
+            for (int i = 0; i < rList.size(); i++) {
+
+                TestResultDTO testResultDTO = rList.get(i);
+
+                try {
+
+                    String testTime = testResultDTO.getTestTime();
+                    log.info("testTime : " + testTime);
+
+                    String newTestTime = testTime.replace(".0", "");
+                    log.info("newTestTime : " + newTestTime);
+
+                    // 수정된 객체를 리스트에 다시 저장
+                    rList.set(i, testResultDTO.toBuilder().testTime(newTestTime).build());
+
+                } catch (Exception e) {
+                    log.error("Error converting date for user: " + testResultDTO, e);
+                }
+            }
+
+            model.addAttribute("rList", rList);
+
+        } else {
+
+            msg = "관리자만 접근 가능합니다.";
+
+        }
+
+        dto = MsgDTO.builder().msg(msg).build();
+
+        model.addAttribute("dto", dto);
+
+        log.info(this.getClass().getName() + ".getTestRecordList End!");
+
+        return "/myPage/testRecordList";
+
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/deleteTestRecord")
+    public MsgDTO deleteTestRecord(HttpServletRequest request, HttpSession session) throws Exception {
+
+        log.info(this.getClass().getName() + ".deleteTestRecord Start!");
+
+        String msg = ""; // 메시지 내용
+        MsgDTO rDTO = null; // 결과 메시지 구조
+
+        try {
+
+            String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+            log.info("SS_USER_ID : " + userId);
+            String testSeq = CmmUtil.nvl(request.getParameter("testSeq"));
+
+            TestResultDTO pDTO = TestResultDTO.builder().userId(userId).testSeq(testSeq).build();
+
+            // 진로심리검사 내역 삭제하기 메서드 호출
+            profileService.deleteTestRecord(pDTO);
+
+            msg = "삭제되었습니다.";
+
+        } catch (Exception e) {
+
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+
+        } finally {
+
+            rDTO = MsgDTO.builder().msg(msg).build();
+
+            log.info(this.getClass().getName() + ".deleteTestRecord End!");
+
+        }
+
+        return rDTO;
+    }
+
+    @GetMapping(value = "getLikeJobList")
+    public String getLikeJobList(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".getLikeJobList Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        log.info("userId : " + userId);
+
+        LikeJobDTO pDTO = LikeJobDTO.builder().userId(userId).build();
+
+        List<LikeJobDTO> rList = Optional.ofNullable(profileService.getLikeJobList(pDTO))
+                .orElseGet(ArrayList::new);
+
+        log.info("rList : " + rList);
+
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".getLikeJobList End!");
+
+        return "/myPage/likeJobList";
+
     }
 
 }

@@ -50,15 +50,31 @@
                 return;
             }
 
-            if (f.nickname.value === "") {
-                alert("닉네임을 입력하세요.");
-                f.nickname.focus();
-                return;
-            }
-
             if (f.password.value === "") {
                 alert("비밀번호를 입력하세요.");
                 f.password.focus();
+                return;
+            }
+
+            if (f.password2.value === "") {
+                alert("비밀번호 확인을 입력하세요.");
+                f.password2.focus();
+                return;
+            }
+
+            if (f.password.value !== f.password2.value) {
+                alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+                f.password.focus();
+                return;
+            }
+
+            if (f.identity.value === "") {
+                alert("직업을 선택하세요.");
+                return;
+            }
+
+            if (f.gender.value === "") {
+                alert("성별을 선택하세요.");
                 return;
             }
 
@@ -137,6 +153,7 @@
                             <div style="margin: 28% 0;">이름</div>
                             <div style="margin: 28% 0;">닉네임</div>
                             <div style="margin: 27% 0;">비밀번호</div>
+                            <div style="margin: 27% 0;">비밀번호 확인</div>
                             <div style="margin: 32% 0;">직업</div>
                             <div style="margin: 25% 0;">성별</div>
                             <div style="margin: 20% 0;">이메일</div>
@@ -150,21 +167,24 @@
                                 <input type="text" id="userName" name="userName" th:value="${rDTO.userName}">
                             </div>
                             <div style="margin-bottom: 6%;">
-                                <input type="text" id="nickname" name="nickname" th:value="${rDTO.nickname}">
+                                <input type="text" id="nickname" name="nickname" th:value="${rDTO.nickname}" disabled>
                             </div>
                             <div style="margin-bottom: 6%;">
                                 <input type="password" name="password" style="width:95%" placeholder="비밀번호"/>
                             </div>
                             <div style="margin-bottom: 6%;">
+                                <input type="password" name="password2" style="width:95%" placeholder="비밀번호 확인"/>
+                            </div>
+                            <div style="margin-bottom: 6%;">
                                 <select name="identity">
-                                    <option value="고등학생">고등학생</option>
-                                    <option value="대학생">대학생</option>
-                                    <option value="일반">일반</option>
+                                    <option th:selected="${rDTO.identity == 'highschool'}" value="highschool">고등학생</option>
+                                    <option th:selected="${rDTO.identity == 'college'}" value="college">대학생</option>
+                                    <option th:selected="${rDTO.identity == 'adult'}" value="adult">일반</option>
                                 </select>
                             </div>
                             <div style="margin-bottom: 6%;">
-                                <input type="radio" name="gender" th:checked="${rDTO.gender == '남'}" value="남"> 남
-                                <input type="radio" name="gender" th:checked="${rDTO.gender == '여'}" value="여"> 여
+                                <input type="radio" name="gender" th:checked="${rDTO.gender == 'male'}" value="male"> 남
+                                <input type="radio" name="gender" th:checked="${rDTO.gender == 'female'}" value="female"> 여
                             </div>
                             <div>
                                 <input type="email" id="email" name="email" style="width: 100%;" th:value="${rDTO.email}" disabled>

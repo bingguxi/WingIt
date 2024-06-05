@@ -28,4 +28,26 @@
         WHERE USER_ID = #{userId}
     </delete>
 
+    <!-- 마이페이지 진로심리검사 내역 조회하기 -->
+    <select id="getTestRecordList" parameterType="TestResultDTO" resultType="TestResultDTO">
+        SELECT TEST_SEQ, TEST_TYPE, TEST_TIME, URL
+        FROM TEST_RESULT
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <!-- 마이페이지 진로심리검사 내역 삭제하기 -->
+    <delete id="deleteTestRecord" parameterType="TestResultDTO">
+        DELETE FROM TEST_RESULT
+        WHERE USER_ID = #{userId}
+        AND TEST_SEQ = #{testSeq}
+    </delete>
+
+    <!-- 좋아요 한 직업 모두 조회하기 -->
+    <select id="getLikeJobList" parameterType="LikeJobDTO" resultType="LikeJobDTO">
+        SELECT JD.JOB_DIC_SEQ, JD.JOB_NAME AS JOB_NAME
+        FROM JOB_DICTIONARY JD
+        INNER JOIN LIKE_JOB LJ ON JD.JOB_DIC_SEQ = LJ.JOB_DIC_SEQ
+        WHERE USER_ID = #{userId}
+    </select>
+
 </mapper>
