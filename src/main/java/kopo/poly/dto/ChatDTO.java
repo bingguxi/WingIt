@@ -2,15 +2,19 @@ package kopo.poly.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-@Data
+import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
+
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public class ChatDTO {
+@Builder(toBuilder = true)
+public record ChatDTO (
 
-    private String name; // 이름
-    private String msg; // 채팅 메시지
-    private String date; // 발송날짜
-    private String koMsg; //한국어 채팅 메시지
-    private String enMsg; // 영어 채팅 메시지
+        String name, // 이름
+        String sender, // 채팅 발송자
+        String msg, // 채팅 메시지
+        String date // 발송날짜
+//        String koMsg, //한국어 채팅 메시지
+//        String enMsg // 영어 채팅 메시지
 
+) {
 }

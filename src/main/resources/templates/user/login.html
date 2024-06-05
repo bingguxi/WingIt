@@ -70,9 +70,13 @@
                         success: function (json) { // /notice/noticeUpdate 호출이 성공했다면..
                             console.log(json)
 
-                            if (json.result === 1) { // 로그인 성공
+                            if (json.result === 1) { // 유저 로그인 성공
                                 alert(json.msg); // 메시지 띄우기
                                 location.href = "/main"; // 로그인 성공 페이지 이동
+
+                            }  else if (json.result === 2) { // 관리자 로그인 성공
+                                alert(json.msg); // 메시지 띄우기
+                                location.href = "/adminMain"; // 관리자 전용 페이지 이동
 
                             } else { // 로그인 실패
                                 alert(json.msg); // 메시지 띄우기

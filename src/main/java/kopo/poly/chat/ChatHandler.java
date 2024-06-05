@@ -47,7 +47,9 @@ public class ChatHandler extends TextWebSocketHandler {
         ChatDTO cDTO = new ObjectMapper().readValue(msg, ChatDTO.class);
 
         // 메시지 발송시간 서버 시간으로 설정하여 추가하기
-        cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+//        cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+
+        cDTO = cDTO.toBuilder().date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss")).build();
 
 //        String sendMsg = CmmUtil.nvl(cDTO.getMsg()); // 발송하는 메시지(번역을 위해 가져옴)
 //        log.info("sendMsg : " + sendMsg);
@@ -130,10 +132,16 @@ public class ChatHandler extends TextWebSocketHandler {
                 try {
 
                     //{"name":"이협건","msg":"ㅇㅎ","date":"2022. 7. 25. 오전 9:30:57"}
-                    ChatDTO cDTO = new ChatDTO();
-                    cDTO.setName("관리자");
-                    cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 입장하셨습니다.");
-                    cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+//                    ChatDTO cDTO = new ChatDTO();
+//                    cDTO.setName("관리자");
+//                    cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 입장하셨습니다.");
+//                    cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+
+                    ChatDTO cDTO = ChatDTO.builder()
+                            .name("관리자")
+                            .msg(userName + "님이 " + roomName + " 채팅방에 입장하셨습니다.")
+                            .date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"))
+                            .build();
 
                     String json = new ObjectMapper().writeValueAsString(cDTO);
                     log.info("json : " + json);
@@ -193,10 +201,16 @@ public class ChatHandler extends TextWebSocketHandler {
 
                 try {
                     //{"name":"이협건","msg":"ㅇㅎ","date":"2022. 7. 25. 오전 9:30:57"}
-                    ChatDTO cDTO = new ChatDTO();
-                    cDTO.setName("관리자");
-                    cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.");
-                    cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+//                    ChatDTO cDTO = new ChatDTO();
+//                    cDTO.setName("관리자");
+//                    cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.");
+//                    cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+
+                    ChatDTO cDTO = ChatDTO.builder()
+                            .name("관리자")
+                            .msg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.")
+                            .date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"))
+                            .build();
 
                     String json = new ObjectMapper().writeValueAsString(cDTO);
                     log.info("json : " + json);

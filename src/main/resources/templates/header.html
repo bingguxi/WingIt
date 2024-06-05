@@ -4,40 +4,53 @@
       <div class="container-fluid">
         <div class="row align-items-center">
           <!-- Logo -->
-          <div class="col-xl-2 col-lg-2">
+          <div class="col-xl-4 col-lg-4">
             <div class="logo">
-              <a href="/main">
-                <img src="/img/logo/logowithname_removebg.png" alt="" style="width: 158%; margin: 5% 0;">
+              <a th:if="${session['SS_IDENTITY'] == 'admin'}" href="/adminMain">
+                <img src="/img/logo/logowithname_removebg.png" alt="" style="width: 75%; margin: 5% 0;">
+              </a>
+              <a th:unless="${session['SS_IDENTITY'] == 'admin'}" href="/main">
+                <img src="/img/logo/logowithname_removebg.png" alt="" style="width: 75%; margin: 5% 0;">
               </a>
             </div>
           </div>
-          <div class="col-xl-10 col-lg-10">
+          <div class="col-xl-8 col-lg-8">
             <div class="menu-wrapper d-flex align-items-center justify-content-end">
               <!-- Main-menu -->
               <div class="main-menu d-none d-lg-block">
                 <nav>
                   <ul id="navigation">
-                    <li class="active"><a href="/main" style="font-size: 18pt;">Home</a></li>
-                    <li><a href="#" style="font-size: 14pt;">진로심리검사</a>
+                    <li class="active">
+                      <a th:if="${session['SS_IDENTITY'] == 'admin'}" href="/adminMain" style="font-size: 18pt;">Home</a>
+                      <a th:unless="${session['SS_IDENTITY'] == 'admin'}" href="/main" style="font-size: 18pt;">Home</a>
+                    </li>
+                    <li th:unless="${session['SS_IDENTITY'] == 'admin'}">
+                      <a href="#" style="font-size: 14pt;">진로심리검사</a>
 
                       <ul class="submenu">
-                        <li th:if="${session['SS_IDENTITY'] == '고등학생'}" style="margin-right: 0;">
+                        <li th:if="${session['SS_IDENTITY'] == 'highschool'}" style="margin-right: 0;">
                           <a href="/test/testHMstudent">직업흥미검사(K)</a>
                         </li>
-                        <li th:if="${session['SS_IDENTITY'] == '고등학생'}">
+                        <li th:if="${session['SS_IDENTITY'] == 'highschool'}">
                           <a href="/test/testGCGstudent">직업가치관검사</a>
                         </li>
-                        <li th:unless="${session['SS_IDENTITY'] == '고등학생'}">
+                        <li th:unless="${session['SS_IDENTITY'] == 'highschool'}">
                           <a href="/test/testGCGadult">직업가치관검사</a>
                         </li>
                       </ul>
 
                     </li>
-                    <li><a href="/job/jobList" style="font-size: 14pt;">직업사전</a></li>
-                    <li><a href="about.html" style="font-size: 15pt;">Study with Me</a></li>
+                    <li th:unless="${session['SS_IDENTITY'] == 'admin'}">
+                      <a href="/job" style="font-size: 14pt;">직업사전</a>
+                    </li>
+                    <li th:unless="${session['SS_IDENTITY'] == 'admin'}">
+                      <a href="/studyWithMe/intro" style="font-size: 15pt;">Study with Me</a>
+                    </li>
 
                     <!-- Button -->
-                    <li class="button-header margin-left "><a href="/profile" id="myPage" class="btn" style="font-size: 13pt;">마이페이지</a></li>
+                    <li th:unless="${session['SS_IDENTITY'] == 'admin'}" class="button-header margin-left ">
+                      <a href="/profile" id="myPage" class="btn" style="font-size: 13pt;">마이페이지</a>
+                    </li>
 
                     <!-- 마이페이지 버튼 조건부 시각화 -->
                     <script th:inline="javascript">

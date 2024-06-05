@@ -1,0 +1,220 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>WingIt 회원관리</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <script th:inline="javascript">
+
+        // 로그인 한 사람이 관리자가 아니면, alert 띄우고 로그인 창으로 보내기
+        const msg = /*[[${dto.msg}]]*/ '';
+
+        if (msg !== undefined && msg !== null && msg !== "") {
+            alert(msg);
+            location.href = "/login";
+        }
+
+    </script>
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/progressbar_barfiller.css">
+    <link rel="stylesheet" href="/css/gijgo.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/animated-headline.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table.css"/>
+
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+
+        // 회원정보 상세보기 이동
+        function doDetail(userId) {
+            location.href = "/admin/getUserInfo?userId=" + userId;
+        }
+
+        // 페이지 이동
+        function pageMove(page) {
+
+            console.log(page)
+            $.ajax({
+                url: "/admin/getUserList",
+                type: "get",
+                contentType: "application/json",
+                data: {
+                    page: parseInt(page, 10)
+                },
+                success: function () {
+                    location.href = "/admin/getUserList?page=" + page
+                },
+                error: function (xhr, status, error) {
+                    // 오류가 발생했을 때 수행할 동작
+                }
+            });
+
+        }
+
+    </script>
+
+</head>
+
+<body>
+<!-- Preloader Start -->
+<th:block th:replace="preloader"></th:block>
+<!-- Preloader End -->
+<!-- Header Start -->
+<th:block th:replace="header"></th:block>
+<!-- Header End -->
+<main>
+    <!--? slider Area Start-->
+    <section class="slider-area slider-area2">
+        <div class="slider-active">
+            <!-- Single Slider -->
+            <div class="single-slider slider-height2"
+                 style="background-image: url('/img/wingit_bg.jpg'); background-position: top;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-11 col-md-12">
+                            <div class="hero__caption hero__caption2">
+                                <h1 data-animation="bounceIn" data-delay="0.2s">회원관리</h1>
+                                <!-- breadcrumb Start-->
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/adminMain">Home</a></li>
+                                        <li class="breadcrumb-item"><a href="/admin/getUserList">회원관리</a></li>
+                                    </ol>
+                                </nav>
+                                <!-- breadcrumb End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Courses area start -->
+    <div class="courses-area section-padding40 fix">
+        <div class="container">
+            <div class="row">
+
+                <div class="divTable minimalistBlack">
+                    <div class="divTableHeading">
+                        <div class="divTableRow">
+                            <div class="divTableHead" style="width: 10%; text-align: center;">회원아이디</div>
+                            <div class="divTableHead" style="width: 10%; text-align: center;">회원성명</div>
+                            <div class="divTableHead" style="width: 10%; text-align: center;">가입일시</div>
+                        </div>
+                    </div>
+                    <div class="divTableBody">
+                        <div class="divTableRow" th:each="rDTO : ${rList}" th:if="${rDTO.userId} != 'admin'">
+                            <div class="divTableCell" style="text-align: center;" th:attr="onclick='doDetail(\'' + ${rDTO.userId} + '\')'" th:text="${rDTO.userId}"></div>
+                            <div class="divTableCell" style="text-align: center;" th:attr="onclick='doDetail(\'' + ${rDTO.userId} + '\')'" th:text="${rDTO.userName}"></div>
+                            <div class="divTableCell" style="text-align: center;" th:text="${rDTO.regDt}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 영역-->
+                <div style="display: flex">
+                    <div class="mx-auto">
+                        <ul class="pagination pagination-primary" id="pagination">
+                            <li class="page-item">
+                                <a class="page-link" th:href="@{/admin/getUserList?page=1}">&laquo;</a>
+                            </li>
+                            <!-- 이전 페이지로 이동하는 링크 -->
+                            <li class="page-item" th:if="${currentPage > 1}">
+                                <a class="page-link"
+                                   th:attr="onclick='pageMove(\'' + ${currentPage - 1} + '\')'">&lt;</a>
+                            </li>
+                            <!-- 현재 페이지 주변에 페이지 번호 링크 표시 -->
+                            <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, totalPages)}"
+                                th:class="${pageNumber == currentPage ? 'active' : ''}">
+                                <a class="page-link" th:attr="onclick='pageMove(\'' + ${pageNumber} + '\')'"
+                                   th:text="${pageNumber}"></a>
+                            </li>
+                            <!-- 다음 페이지로 이동하는 링크 -->
+                            <li class="page-item" th:if="${currentPage < totalPages}">
+                                <a class="page-link" th:onclick="pageMove('${currentPage + 1}')">&gt;</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" th:onclick="pageMove('${totalPages}')">&raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</main>
+<footer>
+    <div class="footer-wrappper footer-bg">
+        <!-- Footer Start-->
+        <th:block th:replace="footer"></th:block>
+        <!-- Footer End-->
+    </div>
+</footer>
+<!-- Scroll Up -->
+<div id="back-top">
+    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+</div>
+
+<!-- JS here -->
+<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+<!-- Jquery, Popper, Bootstrap -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Jquery Mobile Menu -->
+<script src="/js/jquery.slicknav.min.js"></script>
+
+<!-- Jquery Slick , Owl-Carousel Plugins -->
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<!-- One Page, Animated-HeadLin -->
+<script src="/js/wow.min.js"></script>
+<script src="/js/animated.headline.js"></script>
+<script src="/js/jquery.magnific-popup.js"></script>
+
+<!-- Date Picker -->
+<script src="/js/gijgo.min.js"></script>
+<!-- Nice-select, sticky -->
+<script src="/js/jquery.nice-select.min.js"></script>
+<script src="/js/jquery.sticky.js"></script>
+<!-- Progress -->
+<script src="/js/jquery.barfiller.js"></script>
+
+<!-- counter , waypoint,Hover Direction -->
+<script src="/js/jquery.counterup.min.js"></script>
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/jquery.countdown.min.js"></script>
+<script src="/js/hover-direction-snake.min.js"></script>
+
+<!-- contact js -->
+<script src="/js/contact.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/mail-script.js"></script>
+<script src="/js/jquery.ajaxchimp.min.js"></script>
+
+<!-- Jquery Plugins, main Jquery -->
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>

@@ -89,7 +89,6 @@ public class LoginController {
 
                 res = 1;
 
-                log.info("SS_USER_ID : " + userId);
                 session.setAttribute("SS_USER_ID", userId);
                 log.info("세션에 저장 후 session.getAttribute(\"SS_USER_ID\") : " + session.getAttribute("SS_USER_ID"));
 
@@ -98,7 +97,16 @@ public class LoginController {
                 session.setAttribute("SS_IDENTITY", identity);
                 log.info("세션에 저장 후 session.getAttribute(\"SS_IDENTITY\") : " + session.getAttribute("SS_IDENTITY"));
 
-                msg = "로그인 성공! " + rDTO.getUserName() + "님 환영합니다.";
+                if (Objects.equals(userId, "admin")) {
+
+                    msg = "관리자님 환영합니다.";
+                    res = 2;
+
+                } else {
+
+                    msg = "로그인 성공! " + rDTO.getUserName() + "님 환영합니다.";
+
+                }
 
             } else {
 

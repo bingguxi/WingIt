@@ -1,0 +1,251 @@
+<!doctype html>
+<html class="no-js" lang="zxx">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>WingIt 마이페이지</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <script th:inline="javascript">
+
+        const ssIdentity = /*[[${session.IDENTITY}]]*/ '';
+
+        if (ssIdentity == undefined || ssIdentity == null || ssIdentity == "" || ssIdentity != "admin") {
+
+            alert("관리자만 접근 가능합니다.");
+            location.href = "/login";
+
+        }
+
+    </script>
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="/css/slicknav.css">
+    <link rel="stylesheet" href="/css/flaticon.css">
+    <link rel="stylesheet" href="/css/progressbar_barfiller.css">
+    <link rel="stylesheet" href="/css/gijgo.css">
+    <link rel="stylesheet" href="/css/animate.min.css">
+    <link rel="stylesheet" href="/css/animated-headline.css">
+    <link rel="stylesheet" href="/css/magnific-popup.css">
+    <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link rel="stylesheet" href="/css/slick.css">
+    <link rel="stylesheet" href="/css/nice-select.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/table.css"/>
+
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+
+        // // 로그인 한 사람이 관리자가 아니면, alert 띄우고 로그인 창으로 보내기
+        // const msg = /*[[${dto.msg}]]*/ '';
+        //
+        // if (msg !== undefined && msg !== null && msg !== "") {
+        //     alert(msg);
+        //     location.href = "/login";
+        // }
+
+        const userId = /*[[${rDTO.userId}]]*/ '';
+
+        // HTML로딩이 완료되고, 실행됨
+        $(document).ready(function () {
+
+            // 회원정보 수정 페이지
+            $("#btnUpdate").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                location.href = "/admin/updateUserInfo?userId=" + userId;
+            })
+
+            $("#btnDelete").on("click", function () {
+                doDelete()
+            })
+
+        })
+
+        // 회원정보 삭제
+        function doDelete() {
+
+            if (confirm("해당 회원정보를 삭제하시겠습니까?")) {
+
+                // Ajax 호출해서 회원정보 삭제하기
+                $.ajax({
+                        url: "/admin/deleteUserInfo",
+                        type: "post",
+                        dataType: "JSON",
+                        data: { userId : userId },
+                        success:
+                            function (json) {
+                                alert(json.msg);
+                                location.href = "/admin/getUserList"; // 회원정보 리스트 페이지로 이동
+                            }
+                    }
+                )
+            }
+        }
+
+    </script>
+
+</head>
+
+<body>
+<!-- Preloader Start -->
+<th:block th:replace="preloader"></th:block>
+<!-- Preloader End -->
+<!-- Header Start -->
+<th:block th:replace="header"></th:block>
+<!-- Header End -->
+<main>
+    <!--? slider Area Start-->
+    <section class="slider-area slider-area2">
+        <div class="slider-active">
+            <!-- Single Slider -->
+            <div class="single-slider slider-height2"
+                 style="background-image: url('/img/wingit_bg.jpg'); background-position: top;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-8 col-lg-11 col-md-12">
+                            <div class="hero__caption hero__caption2">
+                                <h1 data-animation="bounceIn" data-delay="0.2s">회원관리</h1>
+                                <!-- breadcrumb Start-->
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="/main">Home</a></li>
+                                        <li class="breadcrumb-item"><a href="/admin/getUserList">회원관리</a></li>
+                                    </ol>
+                                </nav>
+                                <!-- breadcrumb End -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Courses area start -->
+    <div class="courses-area section-padding40 fix" style="background-color: floralwhite; padding-top: 3%;">
+
+        <div class="container">
+            <div class="row">
+
+                <div class="col-lg-12"
+                     style="display: flex; justify-content: center; border: 5px solid #FD6F22; border-radius: 30px; padding: 3%;font-size: 13pt;">
+
+                    <div style="margin: 0 10% 0 0; font-weight: bold;">
+                        <div>아이디</div>
+                        <br/>
+                        <div>이름</div>
+                        <br/>
+                        <div>닉네임</div>
+                        <br/>
+                        <div>직업</div>
+                        <br/>
+                        <div>성별</div>
+                        <br/>
+                        <div>이메일</div>
+                    </div>
+
+                    <div style="margin: 0 10% 0 5%;">
+                        <div>[[${rDTO.userId}]]</div>
+                        <br/>
+                        <div>[[${rDTO.userName}]]</div>
+                        <br/>
+                        <div>[[${rDTO.nickname}]]</div>
+                        <br/>
+                        <div th:switch="${rDTO.identity}">
+                            <div th:case="'highschool'">고등학생</div>
+                            <div th:case="'college'">대학생</div>
+                            <div th:case="'adult'">일반</div>
+                            <div th:case="*">알 수 없음</div> <!-- 기본값 설정 -->
+                        </div>
+                        <br/>
+                        <div th:switch="${rDTO.gender}">
+                            <div th:case="'male'">남</div>
+                            <div th:case="'female'">여</div>
+                            <div th:case="*">알 수 없음</div> <!-- 기본값 설정 -->
+                        </div>
+                        <br/>
+                        <div>[[${rDTO.email}]]</div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: center;">
+            <button id="btnUpdate" type="button" class="border-btn" style="margin: 1%; width: 10%; padding: 0.5%; font-weight: bold; color: #FD6F22; border: 1px solid #FD6F22;">
+                회원정보 수정
+            </button>
+            <button id="btnDelete" type="submit" class="border-btn" style="margin: 1%; width: 10%; padding: 0.5%; font-weight: bold; color: #FD6F22; border: 1px solid #FD6F22;"
+                    formmethod="post" formaction="/admin/deleteUserInfo">회원정보 삭제
+            </button>
+            <a href="/admin/getUserList"  style="margin: 1%; width: 11%;">
+                <button type="button" class="border-btn" style="font-weight: bold;color: #FD6F22;border: 1px solid #FD6F22;">
+                    회원정보 목록
+                </button>
+            </a>
+        </div>
+
+    </div>
+
+</main>
+<footer>
+    <div class="footer-wrappper footer-bg">
+        <!-- Footer Start-->
+        <th:block th:replace="footer"></th:block>
+        <!-- Footer End-->
+    </div>
+</footer>
+<!-- Scroll Up -->
+<div id="back-top">
+    <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+</div>
+
+<!-- JS here -->
+<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+<!-- Jquery, Popper, Bootstrap -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Jquery Mobile Menu -->
+<script src="/js/jquery.slicknav.min.js"></script>
+
+<!-- Jquery Slick , Owl-Carousel Plugins -->
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<!-- One Page, Animated-HeadLin -->
+<script src="/js/wow.min.js"></script>
+<script src="/js/animated.headline.js"></script>
+<script src="/js/jquery.magnific-popup.js"></script>
+
+<!-- Date Picker -->
+<script src="/js/gijgo.min.js"></script>
+<!-- Nice-select, sticky -->
+<script src="/js/jquery.nice-select.min.js"></script>
+<script src="/js/jquery.sticky.js"></script>
+<!-- Progress -->
+<script src="/js/jquery.barfiller.js"></script>
+
+<!-- counter , waypoint,Hover Direction -->
+<script src="/js/jquery.counterup.min.js"></script>
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/jquery.countdown.min.js"></script>
+<script src="/js/hover-direction-snake.min.js"></script>
+
+<!-- contact js -->
+<script src="/js/contact.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/mail-script.js"></script>
+<script src="/js/jquery.ajaxchimp.min.js"></script>
+
+<!-- Jquery Plugins, main Jquery -->
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>
