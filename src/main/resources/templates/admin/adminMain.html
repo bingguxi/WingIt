@@ -3,11 +3,24 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Courses | Education</title>
+    <title>[WingIt] 관리자</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <script th:inline="javascript">
+
+        const ssIdentity = /*[[${session.SS_IDENTITY}]]*/ '';
+
+        if (ssIdentity == null || ssIdentity != "admin") {
+
+            alert("관리자만 접근 가능합니다.");
+            location.href = "/index";
+
+        }
+
+    </script>
 
     <!-- CSS here -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -24,207 +37,35 @@
     <link rel="stylesheet" href="/css/slick.css">
     <link rel="stylesheet" href="/css/nice-select.css">
     <link rel="stylesheet" href="/css/style.css">
-
-    <style>
-
-        .header-sticky.sticky-bar {
-            background: darkslategray;
-            filter: opacity(0.9);
-        }
-
-        #floating-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            padding: 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s;
-        }
-
-        #floating-icon:hover {
-            background-color: #0056b3;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .modal-close:hover,
-        .modal-close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        /* 여기부터 모달창 안 내용 */
-        /* Include the padding and border in an element's total width and height */
-        #myDIV, #myUL {
-            box-sizing: border-box;
-        }
-
-        /* Remove margins and padding from the list */
-        #myUL {
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Style the list items */
-        #myUL li {
-            cursor: pointer;
-            position: relative;
-            padding: 12px 8px 12px 40px;
-            background: #eee;
-            font-size: 18px;
-            transition: 0.2s;
-
-            /* make the list items unselectable */
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        /* Set all odd list items to a different color (zebra-stripes) */
-        #myUL li:nth-child(odd) {
-            background: #f9f9f9;
-        }
-
-        /* Darker background-color on hover */
-        #myUL li:hover {
-            background: #ddd;
-        }
-
-        /* When clicked on, add a background color and strike out text */
-        #myUL li.checked {
-            background: #888;
-            color: #fff;
-            text-decoration: line-through;
-        }
-
-        /* Add a "checked" mark when clicked on */
-        #myUL li.checked::before {
-            content: '';
-            position: absolute;
-            border-color: #fff;
-            border-style: solid;
-            border-width: 0 2px 2px 0;
-            top: 10px;
-            left: 16px;
-            transform: rotate(45deg);
-            height: 15px;
-            width: 7px;
-        }
-
-        /* Style the close button */
-        .close {
-            position: absolute;
-            right: 0;
-            top: 0;
-            padding: 12px 16px 12px 16px;
-        }
-
-        .close:hover {
-            background-color: #f44336;
-            color: white;
-        }
-
-        /* Style the header */
-        .header {
-            background-color: #f44336;
-            padding: 30px 40px;
-            color: white;
-            text-align: center;
-        }
-
-        /* Clear floats after the header */
-        .header:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Style the input */
-        #myInput {
-            margin: 0;
-            border: none;
-            border-radius: 0;
-            width: 75%;
-            padding: 10px;
-            float: left;
-            font-size: 16px;
-        }
-
-        /* Style the "Add" button */
-        .addBtn {
-            padding: 10px;
-            width: 25%;
-            background: #d9d9d9;
-            color: #555;
-            float: left;
-            text-align: center;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            border-radius: 0;
-        }
-
-        .addBtn:hover {
-            background-color: #bbb;
-        }
-
-    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="/css/font.css">
 
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/main.js"></script>
-    <script th:inline="javascript">
 
-        // HTML로딩이 완료되고, 실행됨
-        $(document).ready(function () {
+    <style>
 
-            // 로그인 정보가 없으면, alert 띄우고 로그인 창으로 보내기
-            const msg = /*[[${dto.msg}]]*/ '';
+        #getUserList {
+            background-color: cornsilk;
+        }
 
-            if (msg !== undefined && msg !== null && msg !== "") {
-                alert(msg);
-                location.href = "/login";
-            }
+        #getUserList:hover {
+            background-color: #fff3c0;
+        }
 
-            const identity = /*[[${session.SS_IDENTITY}]]*/ null;
-            console.log("세션 identity 값 : ", identity);
+        #getCSList {
+            background-color: cornsilk;
+        }
 
-        });
+        #getCSList:hover {
+            background-color: #fff3c0;
+        }
 
-    </script>
+        #minHeight {
+            min-height: 911px;
+        }
+
+    </style>
 
 </head>
 
@@ -251,24 +92,28 @@
     <section class="slider-area ">
         <div class="slider-active">
             <!-- Single Slider -->
-            <div class="single-slider slider-height d-flex align-items-center">
+            <div class="single-slider slider-height d-flex align-items-center" id="minHeight">
                 <div class="services-area" style="display: contents;">
-                    <div class="container" style="height: 20rem;">
+                    <div class="container" style="height: 30rem;">
                         <div class="row justify-content-sm-center" style="height: 100%;">
                             <div class="col-lg-6 col-md-6 col-sm-8">
                                 <a href="/admin/getUserList">
-                                    <div class="single-services" style="display: flex; justify-content: center; align-items: center; height: 100%; background-color: cornsilk;">
-                                        <div class="features-caption" style="padding: 0;">
-                                            <h3 style="margin: 0; font-size: 20pt;">회원관리</h3>
+                                    <div class="single-services" id="getUserList" style="display: flex; justify-content: center; align-items: center; height: 100%;
+                                                                                         flex-direction: column;">
+                                        <img src="/img/logo/users.png" width="110px" height="110px">
+                                        <div class="features-caption" style="padding: 0; margin-top: 2%;">
+                                            <h3 style="margin: 0; font-size: 20pt; letter-spacing: 1px;">회원관리</h3>
                                         </div>
                                     </div>
                                 </a>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-8">
                                 <a href="/admin/getCSList">
-                                    <div class="single-services" style="display: flex; justify-content: center; align-items: center; height: 100%; background-color: cornsilk;">
-                                        <div class="features-caption" style="padding: 0;">
-                                            <h3 style="margin: 0; font-size: 20pt;">고객센터</h3>
+                                    <div class="single-services" id="getCSList" style="display: flex; justify-content: center; align-items: center; height: 100%;
+                                                                                       flex-direction: column;">
+                                        <img src="/img/logo/customer-service-admin.png" width="110px" height="110px">
+                                        <div class="features-caption" style="padding: 0; margin-top: 2%;">
+                                            <h3 style="margin: 0; font-size: 20pt; letter-spacing: 1px;">고객센터</h3>
                                         </div>
                                     </div>
                                 </a>
@@ -290,11 +135,7 @@
 </footer>
 
 <!-- Scroll Up -->
-<div id="back-top">
-    <a title="Go to Top" href="#">
-        <!--<i class="fas fa-level-up-alt"></i>-->
-    </a>
-</div>
+<th:block th:replace="scrollUp"></th:block>
 
 <!-- JS here -->
 <script src="/js/vendor/modernizr-3.5.0.min.js"></script>

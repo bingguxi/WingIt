@@ -91,7 +91,7 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".getUserList End!");
 
-        return "/admin/userList";
+        return "admin/userList";
 
     }
 
@@ -124,21 +124,18 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".getUserInfo End!");
 
-        return "/admin/userInfo";
+        return "admin/userInfo";
     }
 
 
     @GetMapping(value = "/updateUserInfo")
-    public String updateUserInfo(HttpSession session, ModelMap model, HttpServletRequest request) throws Exception {
+    public String updateUserInfo(ModelMap model, HttpServletRequest request) throws Exception {
 
         log.info(this.getClass().getName() + ".updateUserInfo Start!");
 
-        String admin = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
-
-        log.info("세션에서 받아온 admin : " + admin);
         String userId = CmmUtil.nvl(request.getParameter("userId"));
-
         log.info("조회하고자 하는 userId : " + userId);
+        
         UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 
         UserInfoDTO beforeDTO = Optional.ofNullable(adminService.getUserInfo(pDTO)).orElseGet(UserInfoDTO::new);
@@ -157,7 +154,7 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".updateUserInfo End!");
 
-        return "/admin/updateUserInfo";
+        return "admin/updateUserInfo";
     }
 
 
@@ -175,23 +172,17 @@ public class AdminController {
 
             String userId = CmmUtil.nvl(request.getParameter("userId"));
             String userName = CmmUtil.nvl(request.getParameter("userName"));
-            String nickname = CmmUtil.nvl(request.getParameter("nickname"));
-            String password = CmmUtil.nvl(request.getParameter("password"));
             String identity = CmmUtil.nvl(request.getParameter("identity"));
             String gender = CmmUtil.nvl(request.getParameter("gender"));
 
             log.info("userId : " + userId);
             log.info("userName : " + userName);
-            log.info("nickname : " + nickname);
-            log.info("password : " + password);
             log.info("identity : " + identity);
             log.info("gender : " + gender);
 
             UserInfoDTO pDTO = UserInfoDTO.builder()
                     .userId(userId)
                     .userName(userName)
-                    .nickname(nickname)
-                    .password(EncryptUtil.encHashSHA256(password))
                     .identity(identity)
                     .gender(gender)
                     .build();
@@ -309,7 +300,7 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".getCSList End!");
 
-        return "/admin/adminCSList";
+        return "admin/adminCSList";
 
     }
 
@@ -330,7 +321,7 @@ public class AdminController {
 
         log.info(this.getClass().getName() + ".CSChatroom End!");
 
-        return "/admin/adminCSChatroom";
+        return "admin/adminCSChatroom";
     }
 
 }

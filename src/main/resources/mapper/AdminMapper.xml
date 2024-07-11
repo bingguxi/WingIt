@@ -22,8 +22,6 @@
     <update id="updateUserInfo" parameterType="UserInfoDTO">
         UPDATE USER_INFO
         SET USER_NAME = #{userName},
-            NICKNAME = #{nickname},
-            PASSWORD = #{password},
             IDENTITY = #{identity},
             GENDER = #{gender}
         WHERE USER_ID = #{userId}
