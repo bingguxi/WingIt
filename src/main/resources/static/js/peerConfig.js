@@ -60,6 +60,8 @@ const connectSocket = async () =>{
         'camKey': myKey
     }, function () {
         console.log('Connected to WebRTC server');
+        console.log('roomName : ', roomName);
+        console.log('camKey : ', myKey);
 
         // iceCandidate 를 구독 해준다.
         stompClient.subscribe(`/topic/peer/iceCandidate/${myKey}/${roomName}`, candidate => {
@@ -132,6 +134,28 @@ const connectSocket = async () =>{
             }
 
             // 다른 사용자들에게 연결 종료 알림
+            stompClient.send(`/app/disconnect/${roomName}`, {}, JSON.stringify({ key: myKey }));
+        };
+
+        // 사용자가 페이지를 떠날 때 서버로 연결 종료 알림을 보냄
+        window.onbeforeunload = () => {
+            console.log('Window is closing');
+
+            // 원격 비디오 요소 제거
+            // const remoteVideoElement = document.getElementById(key);
+            const remoteVideoElement = document.getElementById(myKey);
+            if (remoteVideoElement) {
+                remoteVideoElement.srcObject = null;
+                remoteVideoElement.remove();
+            }
+
+            // 로컬 스트림 비디오 요소 제거
+            if (localStreamElement) {
+                localStreamElement.srcObject = null;
+                localStreamElement.style.display = 'none';
+            }
+
+            // 서버로 연결 종료 알림 전송
             stompClient.send(`/app/disconnect/${roomName}`, {}, JSON.stringify({ key: myKey }));
         };
 

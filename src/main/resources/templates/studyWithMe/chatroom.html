@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zxx" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title th:text="'[WingIt] Study With Me ' + ${roomName}"></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+  <script th:inline="javascript">
+
+    const ssIdentity = /*[[${session.SS_IDENTITY}]]*/ '';
+
+    if (ssIdentity == null) {
+
+      alert("로그인 후 이용하실 수 있습니다.");
+      location.href = "/index";
+
+    }
+
+  </script>
+
+  <!-- CSS here -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/owl.carousel.min.css">
+  <link rel="stylesheet" href="/css/slicknav.css">
+  <link rel="stylesheet" href="/css/flaticon.css">
+  <link rel="stylesheet" href="/css/progressbar_barfiller.css">
+  <link rel="stylesheet" href="/css/gijgo.css">
+  <link rel="stylesheet" href="/css/animate.min.css">
+  <link rel="stylesheet" href="/css/animated-headline.css">
+  <link rel="stylesheet" href="/css/magnific-popup.css">
+  <link rel="stylesheet" href="/css/fontawesome-all.min.css">
+  <link rel="stylesheet" href="/css/themify-icons.css">
+  <link rel="stylesheet" href="/css/slick.css">
+  <link rel="stylesheet" href="/css/nice-select.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/table.css"/>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="/css/font.css">
+
+  <script src="/js/jquery-3.6.0.min.js" type="text/javascript"></script>
+  <script src="/js/peerConfig.js" type="text/javascript"></script>
+
+  <!-- 웹 페이지에서 WebSocket 클라이언트 라이브러리 로드 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+  <style>
+
+    .video-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-gap: 10px;
+    }
+
+    /* 새로 추가 */
+    .local-stream-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* 새로 추가 */
+    #localStream {
+      width: 100%;
+      border: 7px solid orangered;
+      border-radius: 10px;
+    }
+
+    /* 새로 추가 */
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #remoteStreamDiv {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 10px;
+      grid-column: span 2;
+      border: 7px solid orange;
+      border-radius: 10px;
+    }
+
+    #remoteStreamDiv video {
+      width: 100%;
+      height: 100%;
+    }
+
+    #chat:empty {
+      padding: 2%; /* 원하는 패딩 값으로 조정 */
+    }
+
+    .chat-message {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-message.sent {
+      align-items: flex-end;
+      margin: 1% 0;
+    }
+
+    .chat-message.received {
+      align-items: flex-start;
+      margin: 1% 0;
+    }
+
+  </style>
+
+  <script th:inline="javascript">
+    let data = {}; // 전송 데이터(JSON)
+    let ws; // 웹소켓 객체
+    const roomName = [[${roomName}]]; // 채팅룸 이름
+    console.log("roomName : ", roomName)
+
+    const userName = [[${userName}]]; // 채팅유저 이름
+    console.log("userName : ", userName)
+
+    let cameraOn = true;
+    let micOn = false;
+
+    $(document).ready(function () {
+
+      // 페이지 로드 시 입력란에 포커스
+      $("#msg").focus();
+
+      // 자식 요소가 없을 경우 기본 메시지 추가
+      const chatDiv = document.getElementById("chat");
+      if (chatDiv.children.length === 0) {
+        chatDiv.innerHTML = "<span id='first' style='display: flex; justify-content: center; align-items: center; margin: auto 0; font-size: 13pt;'>아직 주고받은 채팅이 없습니다.</span>";
+      }
+
+      // 카메라 On 버튼 클릭 시
+      $("#cameraOnBtn").on("click", function () {
+        toggleCamera(true);
+        cameraOn = true;
+        updateCameraButtons();
+      });
+
+      // 카메라 Off 버튼 클릭 시
+      $("#cameraOffBtn").on("click", function () {
+        toggleCamera(false);
+        cameraOn = false;
+        updateCameraButtons();
+      });
+
+      // 마이크 On 버튼 클릭 시
+      $("#micOnBtn").on("click", function () {
+        toggleMic(true);
+        micOn = true;
+        updateMicButtons();
+      });
+
+      // 마이크 Off 버튼 클릭 시
+      $("#micOffBtn").on("click", function () {
+        toggleMic(false);
+        micOn = false;
+        updateMicButtons();
+      });
+
+      // 나가기 버튼 클릭 시
+      $("#goOut").on("click", function () {
+        location.href = "/studyWithMe";
+      });
+
+      updateCameraButtons();
+      updateMicButtons();
+
+      // 채팅!!!!!!!!!!!!!!!!!
+      // 웹소켓 객체를 생성하는 중
+      if (ws !== undefined && ws.readyState !== WebSocket.CLOSED) {
+        console.log("WebSocket is already opened.");
+        return;
+      }
+
+      // 접속 URL 예 : ws://localhost:10000/ws/테스트방/별명
+      ws = new WebSocket("wss://" + location.host + "/ws/" + roomName + "/" + userName);
+
+      // 웹소켓 열기
+      ws.onopen = function (event) {
+        if (event.data === undefined)
+          return;
+
+        console.log(event.data)
+      };
+
+      // 웹소캣으로부터 메세지를 받을 때마다 실행됨
+      ws.onmessage = function (msg) {
+
+        // 웹소켓으로부터 받은 데이터를 JSON 구조로 변환하기
+        let data = JSON.parse(msg.data);
+
+        if (data.name === userName) { // 내가 발송한 채팅 메시지는 파란색 글씩
+          $("#chat").append("<div class='chat-message sent'>" +
+                  "<span style='color: black; border: none; padding: 1% 1%; border-radius: 23px; font-size: 11pt; background: gold; width: max-content;'>" + data.msg + " </span>" +
+                  "<span style='color: grey;'>" + data.date + " </span>" +
+                  "</div>");
+        } else if (data.name === "관리자") { // 관리자가 발송한 채팅 메시지는 빨간색 글씩
+          $("#chat").append("<div style='clear: both; display: flex; justify-content: center; align-items: center;'>" +
+                  "<span style='color: black; font-size: 12pt;'>" + data.msg + " </span>" +
+                  "</div>");
+        } else {
+          $("#chat").append("<div class='chat-message received'>" + // 그 외 채팅참여자들이 발송한 채팅 메시지는 검정색
+                  "<span>" + data.name + " </span>" +
+                  "<span style='color: black; border: none; padding: 1% 1%; border-radius: 23px; font-size: 11pt; background: antiquewhite; width: max-content;'>" + data.msg + " </span>" +
+                  "<span style='color: grey'>" + data.date + " </span>" +
+                  "</div>");
+        }
+
+        // 새로운 메시지가 추가될 때 #first 요소 제거
+        const firstMessage = document.getElementById("first");
+        if (firstMessage) {
+          firstMessage.remove();
+        }
+
+        applyScroll();
+
+        // Scroll to bottom
+        scrollToBottom();
+
+      };
+
+      // 엔터 키 이벤트 처리
+      $('#msg').on('keydown', function(event) {
+        if (event.keyCode === 13 && !event.shiftKey) { // 13은 엔터 키의 keyCode
+          event.preventDefault(); // 기본 동작 중단
+          $("#btnSend").click(); // 전송 버튼 클릭
+        } });
+
+      $("#btnSend").on("click", function () {
+
+        if ( $("#msg").val().trim() === "" ) {
+          alert("메세지를 입력하세요.");
+          $("#msg").focus()
+          return;
+        }
+
+        let data = {}; // 데이터 객체 초기화
+        data.name = userName; // 별명
+        data.msg = $("#msg").val();  // 입력한 메시지
+
+        let chatMsg = JSON.stringify(data); // 데이터 구조를 JSON 형태로 변경하기
+
+        ws.send(chatMsg); // 채팅 메시지 전송하기
+
+        $("#msg").val(""); // 채팅 메시지 전송 후, 입력한 채팅내용 지우기
+
+        // 채팅 입력란에 포커스
+        $("#msg").focus();
+
+      });
+
+    });
+
+    // 카메라 On/Off 함수
+    const toggleCamera = async (toggle) => {
+      if (localStream !== undefined) {
+        const videoTracks = localStream.getVideoTracks();
+        if (videoTracks.length > 0) {
+          videoTracks[0].enabled = toggle; // 카메라 On/Off
+        }
+      }
+    };
+
+    // 마이크 On/Off 함수
+    const toggleMic = async (toggle) => {
+      if (localStream !== undefined) {
+        const audioTracks = localStream.getAudioTracks();
+        if (audioTracks.length > 0) {
+          audioTracks[0].enabled = toggle; // 마이크 On/Off
+        }
+      }
+    };
+
+    // 카메라 상태에 따라 버튼을 토글하는 함수
+    const updateCameraButtons = () => {
+      if (cameraOn) {
+        $("#cameraOnBtn").hide();
+        $("#cameraOffBtn").show();
+      } else {
+        $("#cameraOnBtn").show();
+        $("#cameraOffBtn").hide();
+      }
+    };
+
+    // 마이크 상태에 따라 버튼을 토글하는 함수
+    const updateMicButtons = () => {
+      if (micOn) {
+        $("#micOnBtn").hide();
+        $("#micOffBtn").show();
+      } else {
+        $("#micOnBtn").show();
+        $("#micOffBtn").hide();
+      }
+    };
+
+    function scrollToBottom() {
+      var chat = document.getElementById('chat');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function applyScroll() {
+      var chat = document.getElementById('chat');
+      if (chat.scrollHeight > 500) {
+        chat.style.overflowY = 'scroll';
+      } else {
+        chat.style.overflowY = 'hidden';
+      }
+    }
+
+  </script>
+</head>
+<body>
+
+<!-- Preloader Start -->
+<th:block th:replace="preloader"></th:block>
+<!-- Preloader End -->
+<!-- Header Start -->
+<!--<th:block th:replace="header"></th:block>-->
+<!-- Header End -->
+
+<!--<h1 th:text="${userName + '님! ' + roomName + ' 입장을 환영합니다.'}"></h1>
+<hr/>
+<br/><br/>-->
+
+<main>
+  <!--? slider Area Start-->
+  <section class="slider-area slider-area2">
+    <div class="slider-active">
+      <!-- Single Slider -->
+      <div class="single-slider slider-height2"
+           style="background-image: url('/img/wingit_bg.jpg'); background-position: top;
+                  min-height: auto; height: 200px;">
+        <div class="container">
+          <div class="row" style="justify-content: center;">
+            <div class="col-xl-8 col-lg-11 col-md-12">
+              <div class="hero__caption hero__caption2" style="padding-top: 10%;">
+                <h1 data-animation="bounceIn" data-delay="0.2s" style="text-align: center;"
+                    th:text="${roomName}"></h1>
+                <!-- breadcrumb Start-->
+<!--                <nav aria-label="breadcrumb">-->
+<!--                  <ol class="breadcrumb">-->
+<!--                    <li class="breadcrumb-item"><a href="/main">Home</a></li>-->
+<!--                    <li class="breadcrumb-item"><a href="/studyWithMe">Study With Me</a></li>-->
+<!--                  </ol>-->
+<!--                </nav>-->
+                <!-- breadcrumb End -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses area start -->
+  <div class="courses-area section-padding40 fix" style="padding-right: 1%; padding-left: 1%; padding-top: 1%; background-color: beige;">
+
+    <button type="button" id="startSteamBtn" style="display: none;">start Streams</button>
+
+    <!-- 영상 나오는 부분 -->
+    <div class="video-container">
+
+      <!-- 내 영상 + 카메라/마이크 On/Off 버튼 컨테이너 -->
+      <div class="local-stream-container">
+
+        <!-- 내 영상 -->
+        <video id="localStream" autoplay playsinline controls style="display: none;"></video>
+
+        <!-- 내 영상 아래 카메라/마이크 On/Off 버튼 -->
+        <div style="display: flex; margin-top: 1%; width: 18%; justify-content: space-evenly;">
+          <button id="cameraOnBtn" style="border: 2px solid black; background-color: floralwhite;
+                                        border-radius: 12px; padding: 10%; cursor:pointer;">
+            <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">videocam_off</span>
+          </button>
+          <button id="cameraOffBtn" style="border: 2px solid black; background-color: floralwhite;
+                                        border-radius: 12px; padding: 10%; cursor:pointer;">
+            <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">videocam</span>
+          </button>
+          <button id="micOnBtn" style="border: 2px solid black; background-color: floralwhite;
+                                        border-radius: 12px; padding: 10%; cursor:pointer;">
+            <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">mic_off</span>
+          </button>
+          <button id="micOffBtn" style="border: 2px solid black; background-color: floralwhite;
+                                        border-radius: 12px; padding: 10%; cursor:pointer;">
+            <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">mic</span>
+          </button>
+        </div>
+
+      </div>
+
+      <div id="remoteStreamDiv"></div>
+
+    </div>
+
+<!--    <div style="margin-left: 16%; margin-top: 0.2%;">-->
+<!--      <button id="cameraOnBtn" style="border: 2px solid black; background-color: floralwhite;-->
+<!--                                      border-radius: 12px; padding: 0.5%;">-->
+<!--        <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">videocam_off</span>-->
+<!--      </button>-->
+<!--      <button id="cameraOffBtn" style="border: 2px solid black; background-color: floralwhite;-->
+<!--                                      border-radius: 12px; padding: 0.5%;">-->
+<!--        <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">videocam</span>-->
+<!--      </button>-->
+<!--      <button id="micOnBtn" style="border: 2px solid black; background-color: floralwhite;-->
+<!--                                      border-radius: 12px; padding: 0.5%;">-->
+<!--        <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">mic_off</span>-->
+<!--      </button>-->
+<!--      <button id="micOffBtn" style="border: 2px solid black; background-color: floralwhite;-->
+<!--                                      border-radius: 12px; padding: 0.5%;">-->
+<!--        <span class="material-symbols-outlined" style="color: black; display: flex; justify-content: center; align-items: center;">mic</span>-->
+<!--      </button>-->
+<!--    </div>-->
+
+    <br/>
+
+    <!-- 대화 채팅창 부분 -->
+    <div style="border-radius: 10px; overflow: hidden; border: 3px solid orange;">
+      <div class="divTable minimalistBlack" style="border-collapse: separate; border: none;">
+        <div class="divTableHeading">
+          <div class="divTableRow">
+            <div class="divTableHead">대화 내용</div>
+          </div>
+        </div>
+        <div class="divTableBody">
+
+          <div class="divTableRow" style="background-color: floralwhite;">
+            <div class="divTableCell chat-message" id="chat" style="padding: 1% 1%; height: 500px; overflow-x: hidden; overflow-y: scroll;"></div>
+          </div>
+
+          <div class="divTableRow">
+            <div class="divTableCell" style="padding: 0; display: flex;">
+<!--                <input type="text" id="msg">-->
+<!--              <textarea id="msg" style="width: 92%; border: none; font-size: 11pt; padding: 0.5% 1%; height: 45px;"></textarea>-->
+              <input id="msg" style="width: 92%; border: none; font-size: 11pt; padding: 0.5% 1%; height: 45px;">
+              <button id="btnSend" style="width: 8%; padding: 0.7% 1%; border: none; background: orange; cursor: pointer; letter-spacing: 1px;">메시지 전송</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <br/><br/>
+
+    <!-- 대화 입력창 부분 -->
+<!--    <div class="divTable minimalistBlack">-->
+<!--      <div class="divTableBody">-->
+<!--        <div class="divTableRow">-->
+<!--          <div class="divTableCell">전달할 메시지</div>-->
+<!--          <div class="divTableCell">-->
+<!--            <input type="text" id="msg">-->
+<!--            <button id="btnSend">메시지 전송</button>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+    <div class="row justify-content-center" style="margin: 0 auto;">
+      <div class="col-xl-12">
+        <div class="section-tittle text-center mt-20">
+          <button type="button" id="goOut"
+                  style="font-weight: bold; font-size: 14pt; padding: 1% 2%; border: 1px solid #FF9F67;
+                  color: #FF9F67; background: none; border-radius: 5px; letter-spacing: 1px;
+                  cursor: pointer;">
+                  나가기
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-wrappper footer-bg">
+    <!-- Footer Start-->
+    <th:block th:replace="footer"></th:block>
+    <!-- Footer End-->
+  </div>
+</footer>
+<!-- Scroll Up -->
+<th:block th:replace="toDo"></th:block>
+<th:block th:replace="scrollUp"></th:block>
+
+<!-- JS here -->
+<script src="/js/vendor/modernizr-3.5.0.min.js"></script>
+<!-- Jquery, Popper, Bootstrap -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!-- Jquery Mobile Menu -->
+<script src="/js/jquery.slicknav.min.js"></script>
+
+<!-- Jquery Slick , Owl-Carousel Plugins -->
+<script src="/js/owl.carousel.min.js"></script>
+<script src="/js/slick.min.js"></script>
+<!-- One Page, Animated-HeadLin -->
+<script src="/js/wow.min.js"></script>
+<script src="/js/animated.headline.js"></script>
+<script src="/js/jquery.magnific-popup.js"></script>
+
+<!-- Date Picker -->
+<script src="/js/gijgo.min.js"></script>
+<!-- Nice-select, sticky -->
+<script src="/js/jquery.nice-select.min.js"></script>
+<script src="/js/jquery.sticky.js"></script>
+<!-- Progress -->
+<script src="/js/jquery.barfiller.js"></script>
+
+<!-- counter , waypoint,Hover Direction -->
+<script src="/js/jquery.counterup.min.js"></script>
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/jquery.countdown.min.js"></script>
+<script src="/js/hover-direction-snake.min.js"></script>
+
+<!-- contact js -->
+<script src="/js/contact.js"></script>
+<script src="/js/jquery.form.js"></script>
+<script src="/js/jquery.validate.min.js"></script>
+<script src="/js/mail-script.js"></script>
+<script src="/js/jquery.ajaxchimp.min.js"></script>
+
+<!-- Jquery Plugins, main Jquery -->
+<script src="/js/plugins.js"></script>
+<script src="/js/main.js"></script>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 package kopo.poly.config;
 
+import kopo.poly.chat.ChatHandler;
 import kopo.poly.dto.CommonResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class WebSocketEventListener {
 
         //전역 함수에서 checkRoomId map을 가져와, 해당 세션 Id에 대한 룸 Id 가 있는지 확인
         if(!globalVariables.getCheckRoomId().containsKey(sessionId)){
-            //없다는 추가 해준다.
+            //없다면 추가 해준다.
             globalVariables.getCheckRoomId().put(sessionId, roomName);
 
         }
@@ -75,8 +76,10 @@ public class WebSocketEventListener {
             if(globalVariables.getCheckRoomIdCount().get(roomId) - 1 <= 0){
                 //만약 해당 roomId의 유저가 0 이하라면 삭제한다.
                 globalVariables.getCheckRoomIdCount().remove(roomId);
-            }
-            else{
+
+                // roomInfo에서 해당 방의 정보를 삭제
+                ChatHandler.roomInfo.remove(roomId);
+            } else{
                 //아니면 해당 roomId의 유저를 -1 해준다.
                 globalVariables.getCheckRoomIdCount().put(roomId, globalVariables.getCheckRoomIdCount().get(roomId) - 1);
             }

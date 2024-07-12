@@ -49,7 +49,7 @@ public class ChatHandler extends TextWebSocketHandler {
         // 메시지 발송시간 서버 시간으로 설정하여 추가하기
 //        cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
 
-        cDTO = cDTO.toBuilder().date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss")).build();
+        cDTO = cDTO.toBuilder().date(DateUtil.getDateTime("yyyy-MM-dd HH:mm")).build();
 
 //        String sendMsg = CmmUtil.nvl(cDTO.getMsg()); // 발송하는 메시지(번역을 위해 가져옴)
 //        log.info("sendMsg : " + sendMsg);
@@ -140,7 +140,7 @@ public class ChatHandler extends TextWebSocketHandler {
                     ChatDTO cDTO = ChatDTO.builder()
                             .name("관리자")
                             .msg(userName + "님이 " + roomName + " 채팅방에 입장하셨습니다.")
-                            .date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"))
+                            .date(DateUtil.getDateTime("yyyy-MM-dd HH:mm"))
                             .build();
 
                     String json = new ObjectMapper().writeValueAsString(cDTO);
@@ -196,33 +196,38 @@ public class ChatHandler extends TextWebSocketHandler {
         // 웹소켓에 접속된 모든 사용자 검색
         clients.forEach(s -> {
 
-            // 내가 접속한 채팅방에 있는 세션만 메시지 보내기
-            if (roomNameHash.equals(s.getAttributes().get("roomNameHash"))) {
+            // 세션이 열려 있는지 확인
+            if (s.isOpen()) {
 
-                try {
-                    //{"name":"이협건","msg":"ㅇㅎ","date":"2022. 7. 25. 오전 9:30:57"}
-//                    ChatDTO cDTO = new ChatDTO();
-//                    cDTO.setName("관리자");
-//                    cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.");
-//                    cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
+                // 내가 접속한 채팅방에 있는 세션만 메시지 보내기
+                if (roomNameHash.equals(s.getAttributes().get("roomNameHash"))) {
 
-                    ChatDTO cDTO = ChatDTO.builder()
-                            .name("관리자")
-                            .msg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.")
-                            .date(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"))
-                            .build();
+                    try {
+                        //{"name":"이협건","msg":"ㅇㅎ","date":"2022. 7. 25. 오전 9:30:57"}
+                        //                    ChatDTO cDTO = new ChatDTO();
+                        //                    cDTO.setName("관리자");
+                        //                    cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.");
+                        //                    cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd HH:mm:ss"));
 
-                    String json = new ObjectMapper().writeValueAsString(cDTO);
-                    log.info("json : " + json);
+                        ChatDTO cDTO = ChatDTO.builder()
+                                .name("관리자")
+                                .msg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.")
+                                .date(DateUtil.getDateTime("yyyy-MM-dd HH:mm"))
+                                .build();
 
-                    TextMessage chatMsg = new TextMessage(json);
-                    s.sendMessage(chatMsg);
+                        String json = new ObjectMapper().writeValueAsString(cDTO);
+                        log.info("json : " + json);
 
-                    cDTO = null;
+                        TextMessage chatMsg = new TextMessage(json);
+                        s.sendMessage(chatMsg);
 
-                } catch (IOException e) {
-                    log.info("Error : " + e);
+                        cDTO = null;
+
+                    } catch (IOException e) {
+                        log.info("Error : " + e);
+                    }
                 }
+
             }
         });
 
