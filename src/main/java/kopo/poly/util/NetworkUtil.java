@@ -68,18 +68,21 @@ public class NetworkUtil {
      * 네이버 API 전송 소스 참고하여 구현
      *
      * @param apiUrl         호출할 OpenAPI URL 주소
-     * @param postParams     전송할 파라미터
      * @param requestHeaders 전송하고 싶은 해더 정보
+     * @param postParams     전송할 파라미터
      */
     public static String post(String apiUrl, @Nullable Map<String, String> requestHeaders, String postParams) {
         HttpURLConnection con = connect(apiUrl);
 
         try {
             con.setRequestMethod("POST");
+            con.setRequestProperty("Content-Type", "application/json"); // JSON 형식으로 설정
 
             // 전송할 헤더 값이 존재하면, 해더 값 추가하기
-            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
-                con.setRequestProperty(header.getKey(), header.getValue());
+            if (requestHeaders != null) {
+                for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
+                    con.setRequestProperty(header.getKey(), header.getValue());
+                }
             }
 
             // POST 방식으로 전송할때, 전송할 파라미터 정보 넣기(GET 방식은 필요없음)

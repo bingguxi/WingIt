@@ -5,33 +5,37 @@
         <div class="single-footer-caption mb-50">
           <div class="single-footer-caption mb-30">
             <!-- logo -->
-            <div class="footer-logo mb-25">
-              <a href="/main"><img src="/img/logo/logo2_footer.png" alt=""></a>
+            <div class="footer-logo mb-10">
+              <a href="/main"><img src="/img/logo/logowithname_removebg.png" width="200px" height="62px"  alt="WingIt 로고"></a>
             </div>
             <div class="footer-tittle">
               <div class="footer-pera">
-                <p>The automated process starts as soon as your clothes go into the machine.</p>
+                <p style="padding-left: 4%;">꿈에 날개를 달아주는 공간</p>
               </div>
             </div>
             <!-- social -->
-            <div class="footer-social">
+            <!--<div class="footer-social">
               <a href="#"><i class="fab fa-twitter"></i></a>
               <a href="https://bit.ly/sai4ull"><i class="fab fa-facebook-f"></i></a>
               <a href="#"><i class="fab fa-pinterest-p"></i></a>
-            </div>
+            </div>-->
           </div>
         </div>
       </div>
       <div class="col-xl-2 col-lg-3 col-md-4 col-sm-5">
         <div class="single-footer-caption mb-50">
           <div class="footer-tittle">
-            <h4>Our solutions</h4>
+            <h4>진로심리검사</h4>
             <ul>
-              <li><a href="#">Design & creatives</a></li>
-              <li><a href="#">Telecommunication</a></li>
-              <li><a href="#">Restaurant</a></li>
-              <li><a href="#">Programing</a></li>
-              <li><a href="#">Architecture</a></li>
+              <li th:if="${session['SS_IDENTITY'] == 'highschool'}" style="margin-right: 0;">
+                <a href="/test/testHMstudent">직업흥미검사(K)</a>
+              </li>
+              <li th:if="${session['SS_IDENTITY'] == 'highschool'}">
+                <a href="/test/testGCGstudent">직업가치관검사</a>
+              </li>
+              <li th:unless="${session['SS_IDENTITY'] == 'highschool'}">
+                <a href="/test/testGCGadult">직업가치관검사</a>
+              </li>
             </ul>
           </div>
         </div>
@@ -39,13 +43,13 @@
       <div class="col-xl-2 col-lg-4 col-md-4 col-sm-6">
         <div class="single-footer-caption mb-50">
           <div class="footer-tittle">
-            <h4>Support</h4>
+            <h4>직업사전</h4>
             <ul>
-              <li><a href="#">Design & creatives</a></li>
-              <li><a href="#">Telecommunication</a></li>
-              <li><a href="#">Restaurant</a></li>
-              <li><a href="#">Programing</a></li>
-              <li><a href="#">Architecture</a></li>
+              <li><a href="/job">직업사전</a></li>
+<!--              <li><a href="#">Telecommunication</a></li>-->
+<!--              <li><a href="#">Restaurant</a></li>-->
+<!--              <li><a href="#">Programing</a></li>-->
+<!--              <li><a href="#">Architecture</a></li>-->
             </ul>
           </div>
         </div>
@@ -53,13 +57,13 @@
       <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
         <div class="single-footer-caption mb-50">
           <div class="footer-tittle">
-            <h4>Company</h4>
+            <h4>Study With Me</h4>
             <ul>
-              <li><a href="#">Design & creatives</a></li>
-              <li><a href="#">Telecommunication</a></li>
+              <li><a href="/studyWithMe">Study With Me</a></li>
+              <!--<li><a href="#">Telecommunication</a></li>
               <li><a href="#">Restaurant</a></li>
               <li><a href="#">Programing</a></li>
-              <li><a href="#">Architecture</a></li>
+              <li><a href="#">Architecture</a></li>-->
             </ul>
           </div>
         </div>
@@ -74,14 +78,19 @@
       <div class="row d-flex align-items-center">
         <div class="col-xl-12 ">
           <div class="footer-copy-right text-center">
+
             <p>
-              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+              Copyright &copy;2024 All rights reserved
+            </p>
+
+            <!--<p>
+              &lt;!&ndash; Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. &ndash;&gt;
               Copyright &copy;<script>document.write(new Date().getFullYear());</script>
               All rights reserved | This template is made with <i class="fa fa-heart"
                                                                   aria-hidden="true"></i> by <a
                     href="https://colorlib.com" target="_blank">Colorlib</a>
-              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-            </p>
+              &lt;!&ndash; Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. &ndash;&gt;
+            </p>-->
           </div>
         </div>
       </div>

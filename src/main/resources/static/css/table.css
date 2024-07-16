@@ -5,7 +5,7 @@ div.minimalistBlack {
     border-collapse: collapse;
 }
 .divTable.minimalistBlack .divTableCell, .divTable.minimalistBlack .divTableHead {
-    border: 1px solid #000000;
+    border: 1px solid orange;
     padding: 5px 4px;
 }
 .divTable.minimalistBlack .divTableBody .divTableCell {
@@ -15,7 +15,7 @@ div.minimalistBlack {
     background: #CFCFCF;
     background: -moz-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
     background: -webkit-linear-gradient(top, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
-    background: linear-gradient(to bottom, #dbdbdb 0%, #d3d3d3 66%, #CFCFCF 100%);
+    background: linear-gradient(to bottom, orange 0%, orange 66%, orange 100%);
     border-bottom: 3px solid #000000;
 }
 .divTable.minimalistBlack .divTableHeading .divTableHead {

@@ -1,3 +1,76 @@
+<style>
+
+  #myPage:hover::before {
+    background: none;
+    transition: none;
+  }
+
+  #myPage::before {
+    background: none;
+    transition: none;
+  }
+
+  @media screen and (max-width: 991px) {
+    .logo img {
+      width: 32% !important;
+      margin: 2% 0 !important;
+    }
+  }
+
+  .main-header .main-menu ul ul.submenu>li>a:hover {
+    color:#fb9862 !important;
+    background:none;
+    padding-left:13px !important;
+  }
+
+</style>
+
+<!-- 마이페이지 버튼 조건부 시각화 -->
+<script th:inline="javascript">
+
+  var isLoggedIn = [[${session['SS_USER_ID'] != null}]];
+
+  // 로그인 상태에 따라 버튼 숨기기/표시
+  document.addEventListener('DOMContentLoaded', function () {
+    var myPageButton = document.getElementById('myPage');
+    if (isLoggedIn) {
+      myPageButton.style.display = 'block';
+    } else {
+      myPageButton.style.display = 'none';
+    }
+  });
+
+</script>
+
+<!-- 로그인 / 로그아웃 버튼 조건부 시각화-->
+<script type="text/javascript">
+
+  $(document).ready(function () {
+
+    // 로그아웃 로직
+    var logoutButton = document.getElementById('btnLogout');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function (event) {
+        if (confirm("로그아웃 하시겠습니까?")) {
+          // 로그아웃 처리 로직 추가
+          $.ajax({
+            url: "/logoutProc",
+            type: "post",
+            success: function (json) {
+              console.log(json);
+              if (json.result == 1) {
+                location.href = "/index";
+              }
+            }
+          });
+        }
+      });
+    }
+
+  });
+
+</script>
+
 <div class="header-area header-transparent">
   <div class="main-header ">
     <div class="header-bottom header-sticky">
@@ -44,7 +117,7 @@
                       <a href="/job" style="font-size: 14pt;">직업사전</a>
                     </li>
                     <li th:unless="${session['SS_IDENTITY'] == 'admin'}">
-                      <a href="/studyWithMe/intro" style="font-size: 15pt;">Study with Me</a>
+                      <a href="/studyWithMe" style="font-size: 15pt;">Study with Me</a>
                     </li>
 
                     <!-- Button -->
@@ -52,42 +125,15 @@
                       <a href="/profile" id="myPage" class="btn" style="font-size: 13pt;">마이페이지</a>
                     </li>
 
-                    <!-- 마이페이지 버튼 조건부 시각화 -->
-                    <script th:inline="javascript">
+                    <!-- 로그아웃 버튼 -->
+                    <li class="button-header loggedIn" th:if="${session['SS_USER_ID'] != null}">
+                      <a class="btn btn3" id="btnLogout" style="font-size: 13pt;">로그아웃</a>
+                    </li>
 
-                      var isLoggedIn = [[${session['SS_USER_ID'] != null}]];
-
-                      // 로그인 상태에 따라 버튼 숨기기/표시
-                      document.addEventListener('DOMContentLoaded', function () {
-                        var myPageButton = document.getElementById('myPage');
-                        if (isLoggedIn) {
-                          myPageButton.style.display = 'block';
-                        } else {
-                          myPageButton.style.display = 'none';
-                        }
-                      });
-
-                    </script>
-
-                    <li class="button-header" th:if="${session['SS_USER_ID'] != null}"><a class="btn btn3" id="btnLogout" style="font-size: 13pt;">로그아웃</a></li>
-                    <li class="button-header" th:unless="${session['SS_USER_ID'] != null}"><a class="btn btn3" th:href="@{/login}" style="font-size: 13pt;">로그인</a></li>
-
-                    <!-- 로그인 / 로그아웃 버튼 조건부 시각화-->
-                    <script type="text/javascript">
-
-                      // 로그아웃 로직
-                      document.getElementById("btnLogout").addEventListener("click", function (event) {
-                        if (confirm("로그아웃 하시겠습니까?")) {
-
-                          window.location.href = "/login/logout"; // 로그아웃 페이지로 이동
-
-                        } else {
-
-                          event.preventDefault(); // 기본 동작인 링크 이동을 취소
-                        }
-                      });
-                    </script>
-
+                    <!-- 로그인 버튼 -->
+                    <li class="button-header" th:unless="${session['SS_USER_ID'] != null}">
+                      <a class="btn btn3" th:href="@{/login}" style="font-size: 13pt;">로그인</a>
+                    </li>
 
                   </ul>
                 </nav>
@@ -96,7 +142,8 @@
           </div>
           <!-- Mobile Menu -->
           <div class="col-12">
-            <div class="mobile_menu d-block d-lg-none"></div>
+            <div class="mobile_menu d-block d-lg-none">
+            </div>
           </div>
         </div>
       </div>

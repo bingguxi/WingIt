@@ -1,0 +1,28 @@
+/*@font-face {
+    font-family: 'KCC-Hanbit';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2403-2@1.0/KCC-Hanbit.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}*/
+
+/*@font-face {
+    font-family: 'KCC-Hanbit';
+    src: url('../fonts/KCC-Hanbit.woff2') format('woff2'),
+    url('../fonts/KCC-Hanbit.eot') format('embedded-opentype'),
+    url('../fonts/KCC-Hanbit.otf') format('opentype'),
+    url('../fonts/KCC-Hanbit.ttf') format('truetype'),
+    url('../fonts/KCC-Hanbit.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}*/
+
+@font-face {
+    font-family: 'gowun';
+    src: url('../fonts/GowunDodum-Regular.ttf') format('truetype');
+}
+
+h1,h2,h3,h4,h5,p,a,span,table,div,legend,fieldset,button,label,form,.btn, .pay_title,input, .search-input, .search-box, .card-for, .border-btn {
+    font-family: 'gowun', sans-serif;
+    font-weight: bold;
+
+}
