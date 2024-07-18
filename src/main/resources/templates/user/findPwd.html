@@ -3,10 +3,22 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>WingIt 비밀번호 찾기</title>
+    <title>[WingIt] 비밀번호 찾기</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/x-icon" href="/img/logo/shortcut-icon.png">
+
+    <script th:inline="javascript">
+
+        const ssIdentity = /*[[${session.SS_IDENTITY}]]*/ '';
+
+        if (ssIdentity == "admin") {
+            location.href = "/adminMain";
+        } else if ( ssIdentity != null ) {
+            location.href = "/main";
+        }
+
+    </script>
 
     <!-- CSS here -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -23,6 +35,8 @@
     <link rel="stylesheet" href="/css/slick.css">
     <link rel="stylesheet" href="/css/nice-select.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="/css/font.css">
 
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
@@ -30,10 +44,18 @@
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
-            /*// 로그인
+            // 페이지 로드 시 아이디 입력란에 포커스
+            $("#userId").focus();
+
+            // 로그인
             $("#btnLogin").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
                 location.href = "/login";
-            })*/
+            })
+
+            // 아이디 찾기
+            $("#btnFindId").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                location.href = "/login/findId";
+            })
 
             // 비밀번호 찾기
             $("#btnFindPwd").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
@@ -82,11 +104,7 @@
     <!-- Login Admin -->
     <form id="f">
 
-        <div class="login-form" style="
-    padding: 80px 45px 45px 45px;
-    width: 25%;
-    height: 62%;
-">
+        <div class="login-form" style="padding: 80px 45px 45px 45px; width: 25%; height: 64%;">
             <!-- logo-login -->
             <div class="logo-login">
                 <a href="/index"><img src="/img/logo/logo.png" alt=""></a>
@@ -105,20 +123,27 @@
                 <input type="email" name="email" id="email" placeholder="이메일을 입력하세요">
             </div>
             <div class="form-input pt-30">
-                <button type="submit" formmethod="post" formaction="/login/findPwdProc" id="btnFindPwd" style="
-        width: 40%;
-        height: 108%;
-        border-radius: 30px;
-        background-color: orange;
-        border: 1px solid orange;
-        margin: 0 30%;
-        font-size: 14pt;
-        padding: 2.5%;
-        font-weight: bold;
-    ">조회하기
+                <button type="submit" formmethod="post" formaction="/login/findPwdProc" id="btnFindPwd" style="width: 40%;
+                                                                                                               height: 108%;
+                                                                                                               border-radius: 30px;
+                                                                                                               background-color: orange;
+                                                                                                               border: 1px solid orange;
+                                                                                                               margin: 0 30%;
+                                                                                                               font-size: 14pt;
+                                                                                                               padding: 2.5%;
+                                                                                                               font-weight: bold;
+                                                                                                               cursor:pointer;">조회하기
                 </button>
             </div>
 
+            <div style="margin: 0 auto;font-size: 13pt;color: white;text-align: center;">
+                <a id="btnLogin" style="cursor:pointer;">로그인 </a>
+                <span style="
+    font-size: 18pt;
+    margin: 0 2%;
+">|</span>
+                <a id="btnFindId" style="cursor:pointer;"> 아이디 찾기</a>
+            </div>
 
         </div>
     </form>
